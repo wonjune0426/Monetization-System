@@ -29,10 +29,8 @@ jobs:
 
     - name: application.properties
       run: |
-       ls -l
-       cd src
-       ls -l
-       cd main
+       cd src/main
+       mkdir resources
        ls -l
        cd resources
        touch application.properties
