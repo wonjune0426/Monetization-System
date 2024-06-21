@@ -30,7 +30,11 @@ jobs:
     - name: application.properties
       run: |
        ls -l
-       cd src/main/resources
+       cd src
+       ls -l
+       cd main
+       ls -l
+       cd resources
        touch application.properties
        echo "{{ secrets.DATA_SOURCE }}">> application.properties
       shell: bash
