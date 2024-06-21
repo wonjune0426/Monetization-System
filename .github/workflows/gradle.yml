@@ -18,6 +18,22 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
+
+    - name: Setup MYSQL
+      uses: mirromutth/mysql-action@v1.1
+      with:
+        mysql root password: '1234'
+        mysql databese: 'mydb'
+
+    - name: application.properties
+      run: |
+       cd src/main
+       mkdir resources
+       ls -l
+       cd resources
+       touch application.properties
+       echo "{{ secrets.DATA_SOURCE }}">> application.properties
+      shell: bash
         
     - name: Build with Gradle Wrapper
       run: |
