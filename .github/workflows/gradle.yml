@@ -30,9 +30,9 @@ jobs:
     - name: application.properties
       run: |
        ls -l
-       cd ./src/main/resources
-       touch ./application.properties
-       echo "{{ secrets.DATA_SOURCE }}">> ./application.properties
+       cd /src/main/resources
+       touch application.properties
+       echo "{{ secrets.DATA_SOURCE }}">> application.properties
       shell: bash
         
     - name: Build with Gradle Wrapper
