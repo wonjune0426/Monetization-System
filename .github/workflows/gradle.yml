@@ -20,7 +20,9 @@ jobs:
         distribution: 'temurin'
         
     - name: Build with Gradle Wrapper
-      run: ./gradlew build
+      run: |
+       chmod +x gradlew
+       ./gradlew build
 
     - name: web docker build and push
       run: |
