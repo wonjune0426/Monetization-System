@@ -24,8 +24,6 @@ jobs:
       with:
         mysql root password: '1234'
         mysql databese: 'mydb'
-      
-    
 
     - name: application.properties
       run: |
