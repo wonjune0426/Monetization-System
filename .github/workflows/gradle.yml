@@ -41,7 +41,7 @@ jobs:
 
     - name: web docker build and push
       run: |
-        docker build -t ${{DOCKER_REPO}}:spring .
+        docker build -t ${{ secrets.DOCKER_REPO }}:spring .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker push ${{DOCKER_REPO}}:spring
 
