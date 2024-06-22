@@ -43,7 +43,7 @@ jobs:
       run: |
         docker build -t ${{ secrets.DOCKER_REPO }}:spring .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker push ${{DOCKER_REPO}}:spring
+        docker push ${{ secrets.DOCKER_REPO }}:spring
 
     - name: Ec2 docker-compose up
       uses: appleboy/ssh-action@master
