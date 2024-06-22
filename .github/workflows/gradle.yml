@@ -22,14 +22,13 @@ jobs:
     - name: Setup MYSQL
       uses: mirromutth/mysql-action@v1.1
       with:
-        mysql root password: '1234'
+        mysql root password: ${{secrets.DB_PW}}
         mysql databese: 'mydb'
 
     - name: application.properties
       run: |
        cd src/main
        mkdir resources
-       ls -l
        cd resources
        touch application.properties
        echo "{{ secrets.DATA_SOURCE }}">> application.properties
@@ -42,6 +41,18 @@ jobs:
 
     - name: web docker build and push
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:0.1 .
+        docker build -t ${{DOCKER_REPO}}:spring .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:0.1
+        docker push ${{DOCKER_REPO}}:spring
+
+    - name: Ec2 docker-compose up
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{secrets.HOST}}
+        username: ubuntu
+        key: ${{secrets.KEYPAIR}}
+        script: |
+          docker-compose down
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker pull ${{DOCKER_REPO}}:spring
+          docker-compose up -d
