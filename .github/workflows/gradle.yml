@@ -25,7 +25,7 @@ jobs:
         mysql root password: ${{secrets.DB_PW}}
         mysql databese: 'mydb'
 
-    - name: application.properties
+    - name: Application.properties
       run: |
        cd src/main
        mkdir resources
@@ -39,7 +39,7 @@ jobs:
        chmod +x gradlew
        ./gradlew build
 
-    - name: web docker build and push
+    - name: Docker image build and dockerhub push
       run: |
         docker build -t ${{ secrets.DOCKER_REPO }}:spring .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
