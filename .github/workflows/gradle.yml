@@ -54,5 +54,5 @@ jobs:
         script: |
           docker-compose down
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker pull ${{DOCKER_REPO}}:spring
+          docker pull ${{ secrets.DOCKER_REPO }}:spring
           docker-compose up -d
