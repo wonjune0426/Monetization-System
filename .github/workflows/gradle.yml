@@ -52,7 +52,8 @@ jobs:
         username: ubuntu
         key: ${{secrets.KEYPAIR}}
         script: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker login -u ${{ secrets.DOCKER_USERNAME }}
+          ${{ secrets.DOCKER_PASSWORD }}
           docker compose down
           docker rmi ${{ secrets.DOCKER_REPO }}:spring
           docker pull ${{ secrets.DOCKER_REPO }}:spring
