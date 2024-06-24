@@ -23,7 +23,11 @@ jobs:
       uses: mirromutth/mysql-action@v1.1
       with:
         mysql root password: ${{secrets.DB_PW}}
+        mysql port: 3360
         mysql databese: 'mydb'
+
+    - name: Setup Redis
+      uses: shogo82148/actions-setup-redis@v1.33.0
 
     - name: Application.properties
       run: |
