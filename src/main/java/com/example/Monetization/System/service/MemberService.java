@@ -7,6 +7,9 @@ import com.example.Monetization.System.jwt.JwtUtil;
 import com.example.Monetization.System.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<String,String> redisTemplate;
 
     public void signup(SignupRequestDto signupRequestDto) {
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
@@ -29,8 +33,11 @@ public class MemberService {
             throw new IllegalStateException("중복된 사용자가 존재합니다.");
         }
 
+        ValueOperations<String,String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.set(signupRequestDto.getMember_id(),"13:00");
+
         // 회원 가입 확인
-        Member member = new Member(signupRequestDto.getMember_id(),password,signupRequestDto.isAuthority(),signupRequestDto.getProfile(),false,signupRequestDto.getSocial());
+        Member member = new Member(signupRequestDto.getMember_id(),password,signupRequestDto.isAuthority(),false,signupRequestDto.getSocial());
         memberRepository.save(member);
     }
 

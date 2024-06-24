@@ -26,9 +26,6 @@ public class Member extends Timestamped {
     @Column(name = "authority")
     private boolean authority;
 
-    @Column(name = "profile",nullable = true)
-    private String profile;
-
     @Column(name = "delete_check")
     private boolean delete_check;
 

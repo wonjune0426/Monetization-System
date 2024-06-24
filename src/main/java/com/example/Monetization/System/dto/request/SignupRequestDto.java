@@ -7,6 +7,5 @@ public class SignupRequestDto {
     private String member_id;
     private String password;
     private boolean authority;
-    private String profile;
     private String social;
 }
