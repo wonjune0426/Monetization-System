@@ -32,7 +32,6 @@ jobs:
        cd resources
        touch application.properties
        echo "${{ secrets.DATA_SOURCE }}" >> application.properties
-       cat application.properties
       shell: bash
         
     - name: Build with Gradle Wrapper
