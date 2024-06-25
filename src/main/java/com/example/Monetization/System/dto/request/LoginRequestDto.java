@@ -1,5 +1,6 @@
 package com.example.Monetization.System.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
