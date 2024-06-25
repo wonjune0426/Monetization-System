@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,12 +23,12 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/sign-up")
-    public String signUp(@Valid SignupRequestDto signupRequestDto, BindingResult bindingResult) {
+    public String signUp(@RequestBody @Valid SignupRequestDto signupRequestDto, BindingResult bindingResult) {
         // Validation
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(!fieldErrors.isEmpty()){
             for(final FieldError fieldError : fieldErrors){
-                log.error(fieldError.getDefaultMessage()+": "+fieldError.getField());
+                log.error(fieldError.getField()+": "+fieldError.getDefaultMessage());
                 return fieldError.getDefaultMessage();
             }
         }

@@ -1,18 +1,17 @@
 package com.example.Monetization.System.dto.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class SignupRequestDto {
-    @Email (message = "E-mail 형식이 아닙니다.")
-    @NotBlank
+
+    @NotBlank (message = "Id는 공란일 수 없습니다.")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
     private String member_id;
 
-    @NotBlank
     @Size(min = 8, max = 15,message = "비밀번호는 최소 8글자부터 최대 15글자입니다.")
     private String password;
 
