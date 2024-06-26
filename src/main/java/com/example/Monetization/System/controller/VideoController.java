@@ -28,4 +28,10 @@ public class VideoController {
     public VideoViewResponseDto videoView(@PathVariable(name = "video_id") UUID video_id, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
         return videoService.videoView(video_id, memberDetails);
     }
+
+    @PostMapping("/{video_id}/pause")
+    public String videoPause(@PathVariable(name="video_id")UUID video_id,
+                             @AuthenticationPrincipal MemberDetailsImpl memberDetails, @RequestBody String last_time) {
+        return videoService.videoPause(video_id,memberDetails,last_time);
+    }
 }

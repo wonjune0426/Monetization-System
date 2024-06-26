@@ -23,7 +23,7 @@ public class VideoService {
     private final VideoView_historyRepository videoViewHistoryRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
-
+    // Video 생성
     public String createVideo(CreateVideoRequestDto createVideoRequestDto, MemberDetailsImpl memberDetails) {
         // 현재 로그인 된 Member 정보를 받아옴
         Member member = memberDetails.getMember();
@@ -41,6 +41,7 @@ public class VideoService {
         return "Video 생성 성공";
     }
 
+    // Video 시청
     public VideoViewResponseDto videoView(UUID videoId, MemberDetailsImpl memberDetails) {
         // 반환할 Response 객체
         VideoViewResponseDto videoViewResponseDto = new VideoViewResponseDto();
@@ -80,6 +81,15 @@ public class VideoService {
         return videoViewResponseDto;
     }
 
+    // Vdieo 중단
+    public String videoPause(UUID videoId, MemberDetailsImpl memberDetails, String last_time) {
+        Video video = videoRepository.findById(videoId).orElseThrow(
+                () -> new IllegalArgumentException("존재 하지 않는 Video입니다.")
+        );
+        updateLastWatchTime(videoId, memberDetails.getMember().getMember_id(), last_time);
+        return "Video 재생시간 update";
+    }
+
     // video를 시청한 기록을 확인하는 메서드
     private boolean videoViewMember(UUID videoId, String memberId) {
         String key = "viedoViewMember : " + videoId + "_" + memberId;
@@ -88,19 +98,24 @@ public class VideoService {
             return true;
         } else {
             redisTemplate.opsForValue().set(key, "watched", 30, TimeUnit.SECONDS);
+
             return false;
         }
     }
 
-    // 마지막 시청 시간을 기록하는 메서드
+    // 마지막 시청 시간을 확인하는 메서드
     private String lastWatchTimeCheck(UUID videoId, String memberId) {
         String key = "lastWatchTime : " + videoId + "_" + memberId;
-        if(redisTemplate.hasKey(key)) {
-            return (String) redisTemplate.opsForValue().get(key);
-        } else{
-            return "00:00";
+        if (redisTemplate.hasKey(key)) {
+            return redisTemplate.opsForValue().get(key);
+        } else {
+            return "00:00:00";
         }
     }
 
-
+    // 마지막 시청시간 기록
+    private void updateLastWatchTime(UUID videoId, String memberId, String last_time) {
+        String key = "lastWatchTime : " + videoId + "_" + memberId;
+        redisTemplate.opsForValue().set(key, last_time, 1, TimeUnit.DAYS);
+    }
 }
