@@ -2,11 +2,9 @@ package com.example.Monetization.System.dto.request;
 
 import lombok.Data;
 
-import java.sql.Time;
-
 @Data
-public class CreateRequestVideoDto {
+public class CreateVideoRequestDto {
     private String video_name;
-    private Time video_length;
+    private String video_length;
     private String video_description;
 }

@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.sql.Time;
 import java.util.UUID;
 
 @Entity
@@ -25,7 +23,7 @@ public class Video extends Timestamped {
 
     private String video_name;
 
-    private Time video_length;
+    private String video_length;
 
     private String video_description;
 
