@@ -15,27 +15,22 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "adview_history")
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "videoview_history")
-public class VideoView_history {
+public class AdView_history {
     @Id
-    private UUID videoview_id;
+    private UUID adview_id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @ManyToOne
-    @JoinColumn(name = "video_id")
-    private Video video;
+    @JoinColumn(name="video_ad_info_id")
+    private Video_Ad_Info video_ad_info;
 
     @CreatedDate
     private String create_at;
 
-    public VideoView_history(UUID uuid, Member member, Video video) {
-        this.videoview_id = uuid;
-        this.member = member;
-        this.video = video;
+    public AdView_history(UUID adview_id, Video_Ad_Info video_ad_info) {
+        this.adview_id = adview_id;
+        this.video_ad_info = video_ad_info;
     }
 
     @PrePersist  // 저장하기 전에 실행

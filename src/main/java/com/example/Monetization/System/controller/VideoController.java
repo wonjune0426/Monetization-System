@@ -1,6 +1,7 @@
 package com.example.Monetization.System.controller;
 
 import com.example.Monetization.System.dto.request.CreateVideoRequestDto;
+import com.example.Monetization.System.dto.request.PauseVideoRequestDto;
 import com.example.Monetization.System.dto.response.VideoViewResponseDto;
 import com.example.Monetization.System.security.MemberDetailsImpl;
 import com.example.Monetization.System.service.VideoService;
@@ -30,8 +31,7 @@ public class VideoController {
     }
 
     @PostMapping("/{video_id}/pause")
-    public String videoPause(@PathVariable(name="video_id")UUID video_id,
-                             @AuthenticationPrincipal MemberDetailsImpl memberDetails, @RequestBody String last_time) {
-        return videoService.videoPause(video_id,memberDetails,last_time);
+    public String videoPause(@PathVariable(name="video_id")UUID video_id, @AuthenticationPrincipal MemberDetailsImpl memberDetails, @RequestBody PauseVideoRequestDto pauseVideoRequestDto) {
+        return videoService.videoPause(video_id,memberDetails, pauseVideoRequestDto);
     }
 }

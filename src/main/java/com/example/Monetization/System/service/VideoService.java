@@ -1,17 +1,21 @@
 package com.example.Monetization.System.service;
 
 import com.example.Monetization.System.dto.request.CreateVideoRequestDto;
+import com.example.Monetization.System.dto.request.PauseVideoRequestDto;
 import com.example.Monetization.System.dto.response.VideoViewResponseDto;
-import com.example.Monetization.System.entity.Member;
-import com.example.Monetization.System.entity.Video;
-import com.example.Monetization.System.entity.VideoView_history;
+import com.example.Monetization.System.entity.*;
+import com.example.Monetization.System.repository.AdView_historyRepository;
 import com.example.Monetization.System.repository.VideoRepository;
 import com.example.Monetization.System.repository.VideoView_historyRepository;
+import com.example.Monetization.System.repository.Video_Ad_infoRepository;
 import com.example.Monetization.System.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +25,17 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
     private final VideoView_historyRepository videoViewHistoryRepository;
+    private final AdView_historyRepository adView_historyRepository;
+    private final Video_Ad_infoRepository video_ad_infoRepository;
     private final RedisTemplate<String, String> redisTemplate;
+
+
+    // 문자열로 저장된 값들을 Time 형태로 변화하기 위한 객체
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    // 광고가 재생되는 시점 5분
+    private static final LocalTime adPlayTime = LocalTime.parse("00:05:00", formatter);
+    private final Video_Ad_infoRepository video_Ad_infoRepository;
+
 
     // Video 생성
     public String createVideo(CreateVideoRequestDto createVideoRequestDto, MemberDetailsImpl memberDetails) {
@@ -76,17 +90,50 @@ public class VideoService {
         videoViewResponseDto.setVideo_length(video.getVideo_length());
         videoViewResponseDto.setVideo_description(video.getVideo_description());
         videoViewResponseDto.setLikes(videoViewResponseDto.getLikes());
-        videoViewResponseDto.setLast_time(lastWatchTime);
+        videoViewResponseDto.setLast_watch_time(lastWatchTime);
 
         return videoViewResponseDto;
     }
 
     // Vdieo 중단
-    public String videoPause(UUID videoId, MemberDetailsImpl memberDetails, String last_time) {
+    public String videoPause(UUID videoId, MemberDetailsImpl memberDetails, PauseVideoRequestDto pauseVideoRequestDto) {
         Video video = videoRepository.findById(videoId).orElseThrow(
                 () -> new IllegalArgumentException("존재 하지 않는 Video입니다.")
         );
-        updateLastWatchTime(videoId, memberDetails.getMember().getMember_id(), last_time);
+
+        // Client가 전달한 시간이 해당 영상의 길이 보다 길 경우
+        LocalTime videoTime = LocalTime.parse(video.getVideo_length(), formatter);
+        LocalTime lastWatchTime = LocalTime.parse(pauseVideoRequestDto.getLast_watch_time(), formatter);
+
+        if (lastWatchTime.isAfter(videoTime)) {
+            return "영상의 재생시간보다 긴 시간입니다";
+        }
+
+        // 어뷰징 방지 확인
+        if (!memberDetails.getMember().getMember_id().equals(video.getMember().getMember_id())) {
+            if (!videoViewMember(video.getVideo_id(), memberDetails.getMember().getMember_id())) {
+                // 광고 시청 횟수 계산
+                // 마지막 시청 시간 확인
+                Member member = memberDetails.getMember();
+                LocalTime saveWatchTime = LocalTime.parse(lastWatchTimeCheck(videoId, member.getMember_id()), formatter);
+
+                // 초단위로 변환
+                long saveWatchTimeToSeconds = Duration.between(LocalTime.MIN, saveWatchTime).getSeconds();
+                long lastWatchTimeToSeconds = Duration.between(LocalTime.MIN, lastWatchTime).getSeconds();
+                long adTimeToSeconds = Duration.between(LocalTime.MIN, adPlayTime).getSeconds();
+
+                // 마지막 시청 시간 / 광고 플레이 시간  - 저장된 마지막 시청 시간 / 광고 플레이 시간
+                long adPlayCount = lastWatchTimeToSeconds / adTimeToSeconds - saveWatchTimeToSeconds / adTimeToSeconds;
+
+                Video_Ad_Info video_ad_info = video_Ad_infoRepository.findByVideo(video);
+                for (long i = 0; i < adPlayCount; i++) {
+                    AdView_history adViewHistory = new AdView_history(UUID.randomUUID(), video_ad_info);
+                    adView_historyRepository.save(adViewHistory);
+                }
+            }
+        }
+
+        updateLastWatchTime(videoId, memberDetails.getMember().getMember_id(), pauseVideoRequestDto.getLast_watch_time());
         return "Video 재생시간 update";
     }
 
@@ -106,7 +153,7 @@ public class VideoService {
     // 마지막 시청 시간을 확인하는 메서드
     private String lastWatchTimeCheck(UUID videoId, String memberId) {
         String key = "lastWatchTime : " + videoId + "_" + memberId;
-        if (redisTemplate.hasKey(key)) {
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
             return redisTemplate.opsForValue().get(key);
         } else {
             return "00:00:00";
@@ -114,8 +161,8 @@ public class VideoService {
     }
 
     // 마지막 시청시간 기록
-    private void updateLastWatchTime(UUID videoId, String memberId, String last_time) {
+    private void updateLastWatchTime(UUID videoId, String memberId, String lastWatchTime) {
         String key = "lastWatchTime : " + videoId + "_" + memberId;
-        redisTemplate.opsForValue().set(key, last_time, 1, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(key, lastWatchTime, 1, TimeUnit.DAYS);
     }
 }
