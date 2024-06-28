@@ -1,20 +1,21 @@
 package com.example.Monetization.System.entity;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "video_ad_info")
-public class Video_Ad_Info {
+@Table(name = "video_ad")
+public class Video_Ad extends Timestamped {
+
     @Id
-    private UUID video_ad_info_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long video_ad_id;
 
     @ManyToOne
     @JoinColumn(name = "video_id")
@@ -23,4 +24,8 @@ public class Video_Ad_Info {
     @ManyToOne
     @JoinColumn(name = "ad_id")
     private Ad ad;
+
+    private Long view_count;
+
+
 }

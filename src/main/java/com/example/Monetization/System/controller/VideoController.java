@@ -24,14 +24,16 @@ public class VideoController {
         return videoService.createVideo(createVideoRequestDto, memberDetails);
     }
 
+    // 영상 재생
     @GetMapping("/{video_id}")
     @ResponseBody
     public VideoViewResponseDto videoView(@PathVariable(name = "video_id") UUID video_id, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
         return videoService.videoView(video_id, memberDetails);
     }
 
+    // 영상 중단
     @PostMapping("/{video_id}/pause")
-    public String videoPause(@PathVariable(name="video_id")UUID video_id, @AuthenticationPrincipal MemberDetailsImpl memberDetails, @RequestBody PauseVideoRequestDto pauseVideoRequestDto) {
-        return videoService.videoPause(video_id,memberDetails, pauseVideoRequestDto);
+    public String videoPause(@PathVariable(name = "video_id") UUID video_id, @AuthenticationPrincipal MemberDetailsImpl memberDetails, @RequestBody PauseVideoRequestDto pauseVideoRequestDto) {
+        return videoService.videoPause(video_id, memberDetails, pauseVideoRequestDto);
     }
 }

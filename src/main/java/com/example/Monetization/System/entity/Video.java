@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Entity
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +29,7 @@ public class Video extends Timestamped {
 
     private String video_description;
 
-    private Long likes;
+    private String total_playtime;
 
     private boolean delete_check;
 

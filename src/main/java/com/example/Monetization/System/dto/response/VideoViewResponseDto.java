@@ -9,7 +9,6 @@ public class VideoViewResponseDto {
     private String video_name;
     private String video_length;
     private String video_description;
-    private Long likes;
     private String last_watch_time;
 
     private String errorMessage;

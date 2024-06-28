@@ -14,13 +14,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ad")
-public class Ad {
+public class Ad extends Timestamped{
     @Id
     private UUID ad_id;
 
     private String ad_name;
 
     private String ad_description;
+
+    private Long ad_price;
 
     private boolean delete_check;
 }

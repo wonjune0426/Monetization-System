@@ -4,22 +4,19 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "videoview_history")
-public class VideoView_history {
+public class VideoView_history extends Timestamped {
+
     @Id
-    private UUID videoview_id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long videoview_id;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -29,17 +26,7 @@ public class VideoView_history {
     @JoinColumn(name = "video_id")
     private Video video;
 
-    @CreatedDate
-    private String create_at;
+    private Long view_count;
 
-    public VideoView_history(UUID uuid, Member member, Video video) {
-        this.videoview_id = uuid;
-        this.member = member;
-        this.video = video;
-    }
 
-    @PrePersist  // 저장하기 전에 실행
-    public void onPrePersist() {
-        this.create_at = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-    }
 }
