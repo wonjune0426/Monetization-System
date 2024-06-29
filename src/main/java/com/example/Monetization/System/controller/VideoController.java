@@ -32,8 +32,8 @@ public class VideoController {
     }
 
     // 영상 중단
-    @PatchMapping("/{video_id}/pause")
-    public String videoPause(@PathVariable(name = "video_id") UUID video_id, @AuthenticationPrincipal MemberDetailsImpl memberDetails, @RequestBody PauseVideoRequestDto pauseVideoRequestDto) {
+    @PatchMapping
+    public String videoPause(@RequestParam(name = "video_id") UUID video_id, @AuthenticationPrincipal MemberDetailsImpl memberDetails, @RequestBody PauseVideoRequestDto pauseVideoRequestDto) {
         return videoService.videoPause(video_id, memberDetails, pauseVideoRequestDto);
     }
 }

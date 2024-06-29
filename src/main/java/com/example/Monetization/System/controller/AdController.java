@@ -21,10 +21,13 @@ public class AdController {
         return adService.createAd(createAdRequestDto,memberDetails);
     }
 
-    @PostMapping("/{ad_id}")
-    public String videoAddAd(@RequestBody AdAddRequestDto adAddRequestDto,  @AuthenticationPrincipal MemberDetailsImpl memberDetails, @PathVariable UUID ad_id){
+    @PostMapping
+    public String videoAddAd(@RequestParam UUID ad_id, @RequestBody AdAddRequestDto adAddRequestDto,  @AuthenticationPrincipal MemberDetailsImpl memberDetails){
         return adService.videoAddAd(adAddRequestDto,memberDetails,ad_id);
     }
 
-
+    @PatchMapping
+    public String adView(@RequestParam UUID videoId,@RequestParam UUID adId, @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        return adService.adView(videoId,adId,memberDetails);
+    }
 }

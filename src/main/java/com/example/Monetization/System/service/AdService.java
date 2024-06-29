@@ -12,6 +12,7 @@ import com.example.Monetization.System.repository.VideoRepository;
 import com.example.Monetization.System.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class AdService {
     private final AdRepository adRepository;
     private final VideoRepository videoRepository;
-    private final Video_AdRepository videoAdRepository;
+    private final Video_AdRepository video_AdRepository;
 
     public String createAd(CreateAdRequestDto createAdRequestDto, MemberDetailsImpl memberDetails) {
         Member member = memberDetails.getMember();
@@ -53,7 +54,7 @@ public class AdService {
                 videoAd.setAd(ad);
                 videoAd.setVideo(video);
                 videoAd.setView_count(0L);
-                videoAdRepository.save(videoAd);
+                video_AdRepository.save(videoAd);
             } else{
                 return "영상의 소유주가 아닙니다.";
             }
@@ -61,5 +62,28 @@ public class AdService {
         }
 
         return "비디오 광고 관계 매핑 성공";
+    }
+
+    @Transactional
+    public String adView(UUID videoId, UUID adId, MemberDetailsImpl memberDetails) {
+        Video video = videoRepository.findById(videoId).orElseThrow(
+                ()-> new IllegalArgumentException("존재하지 않는 영상입니다.")
+        );
+
+        Ad ad = adRepository.findById(adId).orElseThrow(
+                ()-> new IllegalArgumentException("존재하지 않는 광고 입니다.")
+        );
+
+        Member member = memberDetails.getMember();
+
+        if(!member.getMember_id().equals(video.getMember().getMember_id())){
+            Video_Ad videoAd = video_AdRepository.findByVideoAndAd(video,ad).orElseThrow(
+                    ()->new IllegalArgumentException("영상에 광고가 등록되지 않았습니다.")
+            );
+
+            videoAd.setView_count(videoAd.getView_count() + 1);
+        }
+
+        return "광고 조회 수 증가";
     }
 }
