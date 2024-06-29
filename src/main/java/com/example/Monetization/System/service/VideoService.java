@@ -5,16 +5,15 @@ import com.example.Monetization.System.dto.request.PauseVideoRequestDto;
 import com.example.Monetization.System.dto.response.VideoViewResponseDto;
 import com.example.Monetization.System.entity.Member;
 import com.example.Monetization.System.entity.Video;
-import com.example.Monetization.System.entity.VideoView_history;
+import com.example.Monetization.System.entity.VideoView_History;
 import com.example.Monetization.System.repository.VideoRepository;
-import com.example.Monetization.System.repository.VideoView_historyRepository;
+import com.example.Monetization.System.repository.VideoView_HistoryRepository;
 import com.example.Monetization.System.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.spec.PSource;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.UUID;
@@ -25,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class VideoService {
 
     private final VideoRepository videoRepository;
-    private final VideoView_historyRepository videoViewHistoryRepository;
+    private final VideoView_HistoryRepository videoViewHistoryRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     // 광고가 재생되는 시점 5분
@@ -37,7 +36,7 @@ public class VideoService {
         Member member = memberDetails.getMember();
 
         // Member의 Authority가 false면 video 등록 불가
-        if (!member.isAuthority()) return "판매자 권한이 없어 video등록이 불가 합니다.";
+        if (!member.isAuthority()) return "판매자 권한이 없어 영상 들록이 불가 합니다.";
 
         // requestDto를 통해 받아온 정보로 Video 객체 생성
         Video video = new Video(UUID.randomUUID(), member, createVideoRequestDto.getVideo_name(),
@@ -72,9 +71,9 @@ public class VideoService {
         // 어뷰징 방지를 위한 메서드
         // Login한 Member와 해당 영상 게시자 Member 정보가 일치하는지 확인 및 어뷰징 방지
         if (!member.getMember_id().equals(video.getMember().getMember_id()) && !videoViewMember(video.getVideo_id(), member.getMember_id())) {
-            VideoView_history videoView_history = videoViewHistoryRepository.findByMemberAndVideo(member, video)
+            VideoView_History videoView_history = videoViewHistoryRepository.findByMemberAndVideo(member, video)
                     .orElseGet(() -> {
-                        VideoView_history newVideoView_history = new VideoView_history();
+                        VideoView_History newVideoView_history = new VideoView_History();
                         newVideoView_history.setMember(member);
                         newVideoView_history.setVideo(video);
                         newVideoView_history.setView_count(0L);
