@@ -21,8 +21,8 @@ public class AdController {
         return adService.createAd(createAdRequestDto,memberDetails);
     }
 
-    @PostMapping
-    public String videoAddAd(@RequestParam UUID ad_id, @RequestBody AdAddRequestDto adAddRequestDto,  @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+    @PostMapping("/{ad_id}")
+    public String videoAddAd(@PathVariable UUID ad_id, @RequestBody AdAddRequestDto adAddRequestDto,  @AuthenticationPrincipal MemberDetailsImpl memberDetails){
         return adService.videoAddAd(adAddRequestDto,memberDetails,ad_id);
     }
 
