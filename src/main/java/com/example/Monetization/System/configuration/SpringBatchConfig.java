@@ -1,46 +1,55 @@
 package com.example.Monetization.System.configuration;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.explore.JobExplorer;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
+import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.StringUtils;
+
+import javax.sql.DataSource;
 
 @Configuration
-public class SpringBatchConfig {
+@EnableConfigurationProperties(BatchProperties.class)
+public class SpringBatchConfig extends DefaultBatchConfiguration {
 
+    private final DataSource dataSource;
+    private final PlatformTransactionManager transactionManager;
 
-    @Bean
-    public Job trMigrationJob(JobRepository jobRepository, Step sampleStep) {
-        return new JobBuilder("sampleJob", jobRepository)
-                .start(sampleStep)
-                .build();
+    public SpringBatchConfig(@Qualifier("BATCH_DATASOURCE") DataSource dataSource, @Qualifier("BATCH_TRANSACTION_MANAGER") PlatformTransactionManager transactionManager) {
+        this.dataSource = dataSource;
+        this.transactionManager = transactionManager;
+    }
+
+    @Override
+    protected DataSource getDataSource() {
+        return dataSource;
+    }
+
+    @Override
+    protected PlatformTransactionManager getTransactionManager() {
+        return transactionManager;
     }
 
     @Bean
-    public Step trMigrationStep(JobRepository jobRepository, Tasklet sampleTasklet,PlatformTransactionManager platformTransactionManager) {
-        return new StepBuilder("sample step", jobRepository)
-                .tasklet(sampleTasklet, platformTransactionManager)
-                .build();
-    }
-
-    @Bean
-    public Tasklet sampleTasklet() {
-        return new Tasklet(){
-
-            @Override
-            public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                System.out.println("sampleTasklet");
-                return RepeatStatus.FINISHED;
-            }
-        };
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
+    public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
+                                                                     JobRepository jobRepository, BatchProperties properties) {
+        JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
+        String jobNames = properties.getJob().getName();
+        if (StringUtils.hasText(jobNames)) {
+            runner.setJobName(jobNames);
+        }
+        return runner;
     }
 
 }
