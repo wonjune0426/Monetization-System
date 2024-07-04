@@ -19,17 +19,17 @@ public class Video extends Timestamped {
     @Id
     private UUID video_id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     private String video_name;
 
-    private String video_length;
-
     private String video_description;
 
-    private String total_playtime;
+    private Long video_length;
+
+    private Long total_playtime;
 
     private boolean delete_check;
 

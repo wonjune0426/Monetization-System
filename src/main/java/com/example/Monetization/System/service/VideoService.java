@@ -39,11 +39,11 @@ public class VideoService {
         if (!member.isAuthority()) return "판매자 권한이 없어 영상 들록이 불가 합니다.";
 
         // requestDto를 통해 받아온 정보로 Video 객체 생성
-        Video video = new Video(UUID.randomUUID(), member, createVideoRequestDto.getVideo_name(),
-                createVideoRequestDto.getVideo_length(), createVideoRequestDto.getVideo_description(), "00:00:00", false);
+      // Video video = new Video(UUID.randomUUID(), member, createVideoRequestDto.getVideo_name(),
+        //       createVideoRequestDto.getVideo_length(), createVideoRequestDto.getVideo_description(), "00:00:00", false);
 
         // Video 객체 저장
-        videoRepository.save(video);
+         //   videoRepository.save(video);
 
         return "Video 생성 성공";
     }
@@ -86,7 +86,7 @@ public class VideoService {
         String lastWatchTime = lastWatchTimeCheck(video.getVideo_id(), member.getMember_id());
 
         videoViewResponseDto.setVideo_name(video.getVideo_name());
-        videoViewResponseDto.setVideo_length(video.getVideo_length());
+//        videoViewResponseDto.setVideo_length(video.getVideo_length());
         videoViewResponseDto.setVideo_description(video.getVideo_description());
         videoViewResponseDto.setLast_watch_time(lastWatchTime);
 
@@ -110,20 +110,20 @@ public class VideoService {
         Duration lastWatchTime = parseDuration(requestWatchTime);
 
         // 영상의 총 길이
-        Duration video_length = parseDuration(video.getVideo_length());
+//        Duration video_length = parseDuration(video.getVideo_length());
 
         // 저장된 마지막 시청 시간
         Duration saveWatchTime = parseDuration(lastWatchTimeCheck(video.getVideo_id(), member.getMember_id()));
 
 
-        if (lastWatchTime.compareTo(video_length) > 0) {
-            return "마지막 중단 시점이 영상의 길이보다 깁니다.";
-        } else if (video_length.equals(lastWatchTime)) requestWatchTime = "00:00:00";
+ //       if (lastWatchTime.compareTo(video_length) > 0) {
+//            return "마지막 중단 시점이 영상의 길이보다 깁니다.";
+ //       } else if (video_length.equals(lastWatchTime)) requestWatchTime = "00:00:00";
 
         // 어뷰징 방지
         if (!member.getMember_id().equals(video.getMember().getMember_id()) && !videoViewMember(video.getVideo_id(), member.getMember_id())) {
             Duration totalPlusTime = saveWatchTime.plus(lastWatchTime);
-            video.setTotal_playtime(formatDuration(totalPlusTime));
+   //         video.setTotal_playtime(formatDuration(totalPlusTime));
         }
 
         updateLastWatchTime(videoId, memberDetails.getMember().getMember_id(), requestWatchTime);
