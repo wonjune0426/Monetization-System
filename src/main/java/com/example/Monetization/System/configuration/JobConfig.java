@@ -62,13 +62,8 @@ public class JobConfig {
 
     @Bean
     public ItemProcessor<HashMap<String, Object>, Calculate> processor() {
-        return new ItemProcessor<HashMap<String, Object>, Calculate>() {
-            @Override
-            public Calculate process(HashMap<String, Object> items) throws Exception {
-                return new Calculate(videoRepository.findById(UUID.fromString(items.get("video_id").toString())).orElseThrow(),
-                        (Long) items.get("view_count"));
-            }
-        };
+        return items -> new Calculate(videoRepository.findById(UUID.fromString(items.get("video_id").toString())).orElseThrow(),
+                (Long) items.get("view_count"));
     }
 
     @Bean
