@@ -1,9 +1,9 @@
 package com.example.Monetization.System.entity;
 
+import com.example.Monetization.System.entity.timestapm.MainTimestamped;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,18 +12,20 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "member")
-public class Member extends Timestamped {
-    @Id
-    private String member_id;
+public class Member extends MainTimestamped {
 
+    @Id
+    private String memberId;
+
+    @Column(nullable = false)
     private String password;
 
-    private boolean authority;
+    @Column(nullable = false)
+    private Boolean authority;
 
-    private boolean delete_check;
-
-    @Column(nullable = true)
+    @Column(length = 20)
     private String social;
 
+    @Column(nullable = false)
+    private Boolean deleteCheck;
 }

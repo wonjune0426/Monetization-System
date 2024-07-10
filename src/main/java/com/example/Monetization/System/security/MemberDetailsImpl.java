@@ -2,8 +2,10 @@ package com.example.Monetization.System.security;
 
 import com.example.Monetization.System.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,7 +23,9 @@ public class MemberDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(String.valueOf(member.getAuthority())));
+        return authorities;
     }
 
     @Override
@@ -31,6 +35,6 @@ public class MemberDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getMember_id();
+        return member.getMemberId();
     }
 }

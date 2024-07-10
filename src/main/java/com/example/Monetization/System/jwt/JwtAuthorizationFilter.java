@@ -57,17 +57,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     // 인증 처리
-    public void setAuthentication(String member_id) {
+    public void setAuthentication(String memberId) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(member_id);
+        Authentication authentication = createAuthentication(memberId);
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String member_id) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(member_id);
+    private Authentication createAuthentication(String memberId) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(memberId);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

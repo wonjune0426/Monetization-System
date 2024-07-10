@@ -27,12 +27,11 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String,String> redisTemplate(){
-        RedisTemplate<String, String> template = new RedisTemplate<>();
+    public RedisTemplate<String,Long> redisTemplate(){
+        RedisTemplate<String, Long> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory());
 
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
         return template;
     }
 }

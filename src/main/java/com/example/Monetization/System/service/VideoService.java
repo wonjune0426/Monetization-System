@@ -1,21 +1,23 @@
 package com.example.Monetization.System.service;
 
-import com.example.Monetization.System.dto.request.CreateVideoRequestDto;
-import com.example.Monetization.System.dto.request.PauseVideoRequestDto;
+import com.example.Monetization.System.dto.request.video.CreateVideoRequestDto;
+import com.example.Monetization.System.dto.request.video.PauseVideoRequestDto;
+import com.example.Monetization.System.dto.request.video.UpdateVideoRequestDto;
 import com.example.Monetization.System.dto.response.VideoViewResponseDto;
 import com.example.Monetization.System.entity.Member;
 import com.example.Monetization.System.entity.Video;
-import com.example.Monetization.System.entity.VideoView_History;
+import com.example.Monetization.System.entity.VideoViewHistory;
+import com.example.Monetization.System.exception.VideoDeleteException;
+import com.example.Monetization.System.exception.VideoNotFoundException;
 import com.example.Monetization.System.repository.VideoRepository;
-import com.example.Monetization.System.repository.VideoView_HistoryRepository;
+import com.example.Monetization.System.repository.VideoViewHistoryRepository;
 import com.example.Monetization.System.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -24,33 +26,75 @@ import java.util.concurrent.TimeUnit;
 public class VideoService {
 
     private final VideoRepository videoRepository;
-    private final VideoView_HistoryRepository videoViewHistoryRepository;
-    private final RedisTemplate<String, String> redisTemplate;
-
-    // 광고가 재생되는 시점 5분
-    private static final Duration adTime = parseDuration("00:05:00");
+    private final VideoViewHistoryRepository videoViewHistoryRepository;
+    private final RedisTemplate<String, Long> redisTemplate;
 
     // Video 생성
     public String createVideo(CreateVideoRequestDto createVideoRequestDto, MemberDetailsImpl memberDetails) {
-        // 현재 로그인 된 Member 정보를 받아옴
+        // 현재 로그인 한 Member 정보를 받아옴
         Member member = memberDetails.getMember();
 
-        // Member의 Authority가 false면 video 등록 불가
-        if (!member.isAuthority()) return "판매자 권한이 없어 영상 들록이 불가 합니다.";
+        // 판매자 권한 확인
+        if(!member.getAuthority()) return "판매자가 아니면 등록할 수 없습니다.";
 
-        // requestDto를 통해 받아온 정보로 Video 객체 생성
-      // Video video = new Video(UUID.randomUUID(), member, createVideoRequestDto.getVideo_name(),
-        //       createVideoRequestDto.getVideo_length(), createVideoRequestDto.getVideo_description(), "00:00:00", false);
 
-        // Video 객체 저장
-         //   videoRepository.save(video);
+        //  requestDto를 통해 받아온 정보로 Video 객체 생성
+        Video video = new Video(member, createVideoRequestDto.getVideoName(), createVideoRequestDto.getVideoDescription(), createVideoRequestDto.getVideoLength());
+
+        //  Video 객체 저장
+        videoRepository.save(video);
 
         return "Video 생성 성공";
     }
 
-    // Video 시청
     @Transactional
-    public VideoViewResponseDto videoView(UUID videoId, MemberDetailsImpl memberDetails) {
+    public String updateVideo(UUID videoId, UpdateVideoRequestDto updateVideoRequestDto, MemberDetailsImpl memberDetails) {
+        // 현재 로그인 한 Member 정보
+        Member member = memberDetails.getMember();
+
+        // 판매자 권한 확인
+        if(!member.getAuthority()) return "판매자가 아니면 수정할 수 없습니다.";
+
+        // video 존재 여부 확인
+        Video video = videoRepository.findById(videoId).orElseThrow(
+                ()->new VideoNotFoundException("존재하지 않는 영상입니다")
+        );
+
+        //삭제 여부 확인
+        if(video.getDeleteCheck()) return "삭제된 영상입니다.";
+
+        // video를 게사한 member와 로그인한 member 일치 여부 확인
+        if(!member.getMemberId().equals(video.getMember().getMemberId())) return "본인의 영상만 수정할 수 있습니다.";
+
+        video.update(updateVideoRequestDto.getVideoName(),updateVideoRequestDto.getVideoDescription());
+        return "비디오 수정 성공";
+    }
+
+    @Transactional
+    public String deleteVide(UUID videoId, MemberDetailsImpl memberDetails) throws VideoDeleteException {
+        // 현재 로그인 한 Member 정보
+        Member member = memberDetails.getMember();
+
+        // 판매자 권한 확인
+        if(!member.getAuthority()) return "판매자가 아니면 삭제할 수 없습니다.";
+
+        // video 존재 여부 확인
+        Video video = videoRepository.findById(videoId).orElseThrow(
+                ()->new VideoNotFoundException("존재하지 않는 영상입니다")
+        );
+
+        //삭제 여부 확인
+        if(video.getDeleteCheck()) throw new VideoDeleteException("삭제된 영상입니다.");
+
+        // video를 게사한 member와 로그인한 member 일치 여부 확인
+        if(!member.getMemberId().equals(video.getMember().getMemberId())) return "본인의 영상만 삭제할 수 있습니다";
+
+        video.delete();
+        return "비디오 삭제 성공";
+    }
+
+    // Video 시청
+    public VideoViewResponseDto videoView(UUID videoId, MemberDetailsImpl memberDetails) throws VideoDeleteException {
         // 반환할 Response 객체
         VideoViewResponseDto videoViewResponseDto = new VideoViewResponseDto();
 
@@ -59,75 +103,52 @@ public class VideoService {
 
         // Video의 존재 여부 확인
         Video video = videoRepository.findById(videoId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 영상입니다.")
+                () -> new VideoNotFoundException("존재하지 않는 영상입니다.")
         );
 
-        // Video의 삭제 여부 확인
-        if (video.isDelete_check()) {
-            videoViewResponseDto.setErrorMessage("삭제된 영상입니다.");
-            return videoViewResponseDto;
-        }
-
-        // 어뷰징 방지를 위한 메서드
-        // Login한 Member와 해당 영상 게시자 Member 정보가 일치하는지 확인 및 어뷰징 방지
-        if (!member.getMember_id().equals(video.getMember().getMember_id()) && !videoViewMember(video.getVideo_id(), member.getMember_id())) {
-            VideoView_History videoView_history = videoViewHistoryRepository.findByMemberAndVideo(member, video)
-                    .orElseGet(() -> {
-                        VideoView_History newVideoView_history = new VideoView_History();
-                        newVideoView_history.setMember(member);
-                        newVideoView_history.setVideo(video);
-                        newVideoView_history.setView_count(0L);
-                        return videoViewHistoryRepository.save(newVideoView_history); // 새 엔티티 저장
-                    });
-            videoView_history.setView_count(videoView_history.getView_count() + 1);
-        }
+        //삭제 여부 확인
+        if(video.getDeleteCheck()) throw new VideoDeleteException("삭제된 영상입니다.");
 
         // 최근 시청기록 조회를 위한 메서드
-        String lastWatchTime = lastWatchTimeCheck(video.getVideo_id(), member.getMember_id());
+        Long lastWatchTime = lastWatchTimeCheck(video.getVideoId(), member.getMemberId());
 
-        videoViewResponseDto.setVideo_name(video.getVideo_name());
-//        videoViewResponseDto.setVideo_length(video.getVideo_length());
-        videoViewResponseDto.setVideo_description(video.getVideo_description());
-        videoViewResponseDto.setLast_watch_time(lastWatchTime);
+        videoViewResponseDto.setVideoName(video.getVideoName());
+        videoViewResponseDto.setVideoLength(video.getVideoLength());
+        videoViewResponseDto.setVideoDescription(video.getVideoDescription());
+        videoViewResponseDto.setLastWatchTime(lastWatchTime);
 
         return videoViewResponseDto;
     }
 
     // Vdieo 중단
     @Transactional
-    public String videoPause(UUID videoId, MemberDetailsImpl memberDetails, PauseVideoRequestDto pauseVideoRequestDto) {
-        // video 확인
-        Video video = videoRepository.findById(videoId).orElseThrow(
-                () -> new IllegalArgumentException("존재 하지 않는 Video입니다.")
-        );
-
+    public String videoPause(UUID videoId, MemberDetailsImpl memberDetails, PauseVideoRequestDto pauseVideoRequestDto) throws VideoDeleteException {
         // 로그인한 member 확인
         Member member = memberDetails.getMember();
 
-        String requestWatchTime = pauseVideoRequestDto.getLast_watch_time();
+        // 중단 시간
+        Long pauseTime = pauseVideoRequestDto.getPauseTime();
 
-        // 전달받은 마지막 시청 시간
-        Duration lastWatchTime = parseDuration(requestWatchTime);
+        // video 확인
+        Video video = videoRepository.findById(videoId).orElseThrow(
+                () -> new VideoNotFoundException("존재하지 않는 영상입니다.")
+        );
 
-        // 영상의 총 길이
-//        Duration video_length = parseDuration(video.getVideo_length());
+        //삭제 여부 확인
+        if(video.getDeleteCheck()) throw new VideoDeleteException("삭제된 영상입니다.");
 
-        // 저장된 마지막 시청 시간
-        Duration saveWatchTime = parseDuration(lastWatchTimeCheck(video.getVideo_id(), member.getMember_id()));
-
-
- //       if (lastWatchTime.compareTo(video_length) > 0) {
-//            return "마지막 중단 시점이 영상의 길이보다 깁니다.";
- //       } else if (video_length.equals(lastWatchTime)) requestWatchTime = "00:00:00";
-
-        // 어뷰징 방지
-        if (!member.getMember_id().equals(video.getMember().getMember_id()) && !videoViewMember(video.getVideo_id(), member.getMember_id())) {
-            Duration totalPlusTime = saveWatchTime.plus(lastWatchTime);
-   //         video.setTotal_playtime(formatDuration(totalPlusTime));
+        // 어뷰징 방지를 위한 검증
+        if(!member.getMemberId().equals(video.getMember().getMemberId()) && videoViewMember(videoId,member.getMemberId())){
+            Long watchTime = pauseTime - lastWatchTimeCheck(videoId, member.getMemberId());
+            VideoViewHistory videoViewHistory = new VideoViewHistory(member,video,watchTime);
+            videoViewHistoryRepository.save(videoViewHistory);
         }
 
-        updateLastWatchTime(videoId, memberDetails.getMember().getMember_id(), requestWatchTime);
-        return "Video 재생시간 update";
+        // 중단 시간이 영상의 길이와 같을 경우 0으로 초기화
+        if(Objects.equals(pauseTime, video.getVideoLength())) pauseTime = 0L;
+
+        updateLastWatchTime(videoId, member.getMemberId(), pauseTime);
+        return "Vide 시청 기록 완료";
     }
 
     // video를 시청한 기록을 확인하는 메서드
@@ -137,45 +158,25 @@ public class VideoService {
         if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
             return true;
         } else {
-            redisTemplate.opsForValue().set(key, "watched", 30, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(key, 30L, 30, TimeUnit.SECONDS);
             return false;
         }
     }
 
     // 마지막 시청 시간을 확인하는 메서드
-    private String lastWatchTimeCheck(UUID videoId, String memberId) {
+    private Long lastWatchTimeCheck(UUID videoId, String memberId) {
         String key = "lastWatchTime : " + videoId + "_" + memberId;
         if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
             return redisTemplate.opsForValue().get(key);
         } else {
-            return "00:00:00";
+            redisTemplate.opsForValue().set(key,0L, 1, TimeUnit.DAYS);
+            return 0L;
         }
     }
 
     // 마지막 시청시간 기록
-    private void updateLastWatchTime(UUID videoId, String memberId, String lastWatchTime) {
+    private void updateLastWatchTime(UUID videoId, String memberId, Long lastWatchTime) {
         String key = "lastWatchTime : " + videoId + "_" + memberId;
         redisTemplate.opsForValue().set(key, lastWatchTime, 1, TimeUnit.DAYS);
-    }
-
-    // HH:mm:ss 형식의 문자열을 Duration으로 변환하는 메서드
-    private static Duration parseDuration(String timeString) throws DateTimeParseException {
-        String[] parts = timeString.split(":");
-        if (parts.length != 3) {
-            throw new DateTimeParseException("Invalid time format", timeString, 0);
-        }
-        long hours = Long.parseLong(parts[0]);
-        long minutes = Long.parseLong(parts[1]);
-        long seconds = Long.parseLong(parts[2]);
-
-        return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds);
-    }
-
-    // Duration을 HH:mm:ss 형식의 문자열로 변환하는 메서드
-    private static String formatDuration(Duration duration) {
-        long hours = duration.toHours();
-        long minutes = duration.toMinutesPart();
-        long seconds = duration.toSecondsPart();
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }

@@ -1,8 +1,7 @@
 package com.example.Monetization.System.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.example.Monetization.System.entity.timestapm.MainTimestamped;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,16 +12,17 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ad")
-public class Ad extends Timestamped{
+public class Ad extends MainTimestamped {
     @Id
-    private UUID ad_id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID adId;
 
-    private String ad_name;
+    @Column(nullable = false, length = 100)
+    private String adName;
 
-    private String ad_description;
+    @Column(nullable = false)
+    private String adDescription;
 
-    private Long ad_price;
-
-    private boolean delete_check;
+    @Column(nullable = false)
+    private Boolean deleteCheck;
 }

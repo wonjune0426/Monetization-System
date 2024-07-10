@@ -1,6 +1,6 @@
 package com.example.Monetization.System.jwt;
 
-import com.example.Monetization.System.dto.request.LoginRequestDto;
+import com.example.Monetization.System.dto.request.member.LoginRequestDto;
 import com.example.Monetization.System.security.MemberDetailsImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -33,9 +33,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            requestDto.getMember_id(),
-                            requestDto.getPassword(),
-                            null
+                            requestDto.getMemberId(),
+                            requestDto.getPassword()
                     )
             );
         } catch (IOException e) {
@@ -49,9 +48,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인 성공 및 JWT 생성");
         String username = ((MemberDetailsImpl) authResult.getPrincipal()).getUsername();
-        boolean authority = authResult.isAuthenticated();
-
-        String token = jwtUtil.createToken(username, authority);
+        Boolean authority =((MemberDetailsImpl) authResult.getPrincipal()).getMember().getAuthority();
+        String token = jwtUtil.createToken(username,authority);
         jwtUtil.addJwtToCookie(token, response);
     }
 
