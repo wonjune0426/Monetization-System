@@ -28,4 +28,19 @@ public class VideoAd extends CreateTimestamped {
 
     @Column(nullable = false)
     private Boolean deleteCheck;
+
+    public VideoAd(Video video, Ad ad) {
+        this.video = video;
+        this.ad = ad;
+        this.totalView = 0L;
+        this.deleteCheck = false;
+    }
+
+    public void viewUpdate(){
+        this.totalView++;
+    }
+
+    public void delete(){
+        this.deleteCheck = true;
+    }
 }

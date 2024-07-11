@@ -1,9 +1,7 @@
 package com.example.Monetization.System.entity;
 
 import com.example.Monetization.System.entity.timestapm.MainTimestamped;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +19,8 @@ public class Member extends MainTimestamped {
     private String password;
 
     @Column(nullable = false)
-    private Boolean authority;
+    @Enumerated(value = EnumType.STRING)
+    private MemberRoleEnum authority;
 
     @Column(length = 20)
     private String social;

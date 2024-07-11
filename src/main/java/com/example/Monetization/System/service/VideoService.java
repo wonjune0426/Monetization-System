@@ -6,9 +6,11 @@ import com.example.Monetization.System.dto.request.video.UpdateVideoRequestDto;
 import com.example.Monetization.System.dto.response.VideoViewResponseDto;
 import com.example.Monetization.System.entity.Member;
 import com.example.Monetization.System.entity.Video;
+import com.example.Monetization.System.entity.VideoAd;
 import com.example.Monetization.System.entity.VideoViewHistory;
 import com.example.Monetization.System.exception.VideoDeleteException;
 import com.example.Monetization.System.exception.VideoNotFoundException;
+import com.example.Monetization.System.repository.VideoAdRepository;
 import com.example.Monetization.System.repository.VideoRepository;
 import com.example.Monetization.System.repository.VideoViewHistoryRepository;
 import com.example.Monetization.System.security.MemberDetailsImpl;
@@ -17,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -28,15 +31,12 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final VideoViewHistoryRepository videoViewHistoryRepository;
     private final RedisTemplate<String, Long> redisTemplate;
+    private final VideoAdRepository videoAdRepository;
 
     // Video 생성
     public String createVideo(CreateVideoRequestDto createVideoRequestDto, MemberDetailsImpl memberDetails) {
         // 현재 로그인 한 Member 정보를 받아옴
         Member member = memberDetails.getMember();
-
-        // 판매자 권한 확인
-        if(!member.getAuthority()) return "판매자가 아니면 등록할 수 없습니다.";
-
 
         //  requestDto를 통해 받아온 정보로 Video 객체 생성
         Video video = new Video(member, createVideoRequestDto.getVideoName(), createVideoRequestDto.getVideoDescription(), createVideoRequestDto.getVideoLength());
@@ -51,9 +51,6 @@ public class VideoService {
     public String updateVideo(UUID videoId, UpdateVideoRequestDto updateVideoRequestDto, MemberDetailsImpl memberDetails) {
         // 현재 로그인 한 Member 정보
         Member member = memberDetails.getMember();
-
-        // 판매자 권한 확인
-        if(!member.getAuthority()) return "판매자가 아니면 수정할 수 없습니다.";
 
         // video 존재 여부 확인
         Video video = videoRepository.findById(videoId).orElseThrow(
@@ -70,13 +67,11 @@ public class VideoService {
         return "비디오 수정 성공";
     }
 
+    // 비디오 삭제
     @Transactional
     public String deleteVide(UUID videoId, MemberDetailsImpl memberDetails) throws VideoDeleteException {
         // 현재 로그인 한 Member 정보
         Member member = memberDetails.getMember();
-
-        // 판매자 권한 확인
-        if(!member.getAuthority()) return "판매자가 아니면 삭제할 수 없습니다.";
 
         // video 존재 여부 확인
         Video video = videoRepository.findById(videoId).orElseThrow(
@@ -90,11 +85,16 @@ public class VideoService {
         if(!member.getMemberId().equals(video.getMember().getMemberId())) return "본인의 영상만 삭제할 수 있습니다";
 
         video.delete();
+        List<VideoAd> videoAdList = videoAdRepository.findAllByVideo(video);
+        for(VideoAd videoAd : videoAdList) {
+            videoAd.delete();
+        }
+
         return "비디오 삭제 성공";
     }
 
     // Video 시청
-    public VideoViewResponseDto videoView(UUID videoId, MemberDetailsImpl memberDetails) throws VideoDeleteException {
+    public VideoViewResponseDto videoView(UUID videoId, MemberDetailsImpl memberDetails){
         // 반환할 Response 객체
         VideoViewResponseDto videoViewResponseDto = new VideoViewResponseDto();
 
@@ -122,7 +122,7 @@ public class VideoService {
 
     // Vdieo 중단
     @Transactional
-    public String videoPause(UUID videoId, MemberDetailsImpl memberDetails, PauseVideoRequestDto pauseVideoRequestDto) throws VideoDeleteException {
+    public String videoPause(UUID videoId, MemberDetailsImpl memberDetails, PauseVideoRequestDto pauseVideoRequestDto) {
         // 로그인한 member 확인
         Member member = memberDetails.getMember();
 

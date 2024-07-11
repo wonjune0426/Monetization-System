@@ -1,13 +1,13 @@
 package com.example.Monetization.System.security;
 
 import com.example.Monetization.System.entity.Member;
+import com.example.Monetization.System.entity.MemberRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class MemberDetailsImpl implements UserDetails {
 
@@ -23,8 +23,13 @@ public class MemberDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        MemberRoleEnum memberRoleEnum = member.getAuthority();
+        String authority = memberRoleEnum.getAuthority();
+
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(String.valueOf(member.getAuthority())));
+        authorities.add(simpleGrantedAuthority);
+
         return authorities;
     }
 

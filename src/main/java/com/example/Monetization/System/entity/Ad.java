@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
@@ -14,7 +15,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Ad extends MainTimestamped {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
+    @UuidGenerator
     private UUID adId;
 
     @Column(nullable = false, length = 100)
@@ -25,4 +27,14 @@ public class Ad extends MainTimestamped {
 
     @Column(nullable = false)
     private Boolean deleteCheck;
+
+    public Ad(String adName, String adDescription) {
+        this.adName = adName;
+        this.adDescription = adDescription;
+        this.deleteCheck = false;
+    }
+
+    public void delete() {
+        this.deleteCheck = true;
+    }
 }

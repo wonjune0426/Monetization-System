@@ -1,5 +1,6 @@
 package com.example.Monetization.System.jwt;
 
+import com.example.Monetization.System.entity.MemberRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -43,7 +44,7 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String member_id, Boolean role) {
+    public String createToken(String member_id, MemberRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +

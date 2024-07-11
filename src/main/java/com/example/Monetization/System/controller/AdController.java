@@ -1,33 +1,48 @@
-//package com.example.Monetization.System.controller;
-//
-//import com.example.Monetization.System.dto.request.AdAddRequestDto;
-//import com.example.Monetization.System.dto.request.CreateAdRequestDto;
-//import com.example.Monetization.System.security.MemberDetailsImpl;
-//import com.example.Monetization.System.service.AdService;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.UUID;
-//
-//@RestController
-//@RequiredArgsConstructor
-//@RequestMapping("/ads")
-//public class AdController {
-//    private final AdService adService;
-//
-//    @PostMapping
-//    public String createAd(@RequestBody CreateAdRequestDto createAdRequestDto, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
-//        return adService.createAd(createAdRequestDto,memberDetails);
-//    }
-//
-//    @PostMapping("/{ad_id}")
-//    public String videoAddAd(@PathVariable UUID ad_id, @RequestBody AdAddRequestDto adAddRequestDto,  @AuthenticationPrincipal MemberDetailsImpl memberDetails){
-//        return adService.videoAddAd(adAddRequestDto,memberDetails,ad_id);
-//    }
-//
-//    @PatchMapping
-//    public String adView(@RequestParam UUID videoId,@RequestParam UUID adId, @AuthenticationPrincipal MemberDetailsImpl memberDetails){
-//        return adService.adView(videoId,adId,memberDetails);
-//    }
-//}
+package com.example.Monetization.System.controller;
+
+import com.example.Monetization.System.dto.request.ad.AdAddRequestDto;
+import com.example.Monetization.System.dto.request.ad.CreateAdRequestDto;
+import com.example.Monetization.System.entity.MemberRoleEnum;
+import com.example.Monetization.System.security.MemberDetailsImpl;
+import com.example.Monetization.System.service.AdService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/ads")
+public class AdController {
+    private final AdService adService;
+
+    // 광고 등록
+    @PostMapping
+    @Secured(MemberRoleEnum.Authority.ADMIN)
+    public String createAd(@RequestBody @Valid CreateAdRequestDto createAdRequestDto, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+        return adService.createAd(createAdRequestDto,memberDetails);
+    }
+
+    // 비디오에 광고 등록
+    @PostMapping("/{adId}")
+    @Secured(MemberRoleEnum.Authority.SELLER)
+    public String videoAddAd(@PathVariable UUID adId, @RequestBody AdAddRequestDto adAddRequestDto,  @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        return adService.videoAddAd(adAddRequestDto,memberDetails,adId);
+    }
+
+    //광고 제거
+    @DeleteMapping("/{adId}")
+    @Secured(MemberRoleEnum.Authority.ADMIN)
+    public String deleteAd(@PathVariable UUID adId, @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        return adService.deleteAd(adId,memberDetails);
+    }
+
+    // 광고 시청
+    @PatchMapping
+    public String adView(@RequestParam UUID videoId,@RequestParam UUID adId, @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        return adService.adView(videoId,adId,memberDetails);
+    }
+}
