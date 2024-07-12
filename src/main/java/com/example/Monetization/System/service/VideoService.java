@@ -142,6 +142,7 @@ public class VideoService {
             Long watchTime = pauseTime - lastWatchTimeCheck(videoId, member.getMemberId());
             VideoViewHistory videoViewHistory = new VideoViewHistory(member,video,watchTime);
             videoViewHistoryRepository.save(videoViewHistory);
+            video.totalViewUpdate();
         }
 
         // 중단 시간이 영상의 길이와 같을 경우 0으로 초기화

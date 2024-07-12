@@ -52,6 +52,10 @@ public class Video extends MainTimestamped {
         this.videoDescription = videoDescription;
     }
 
+    public void totalViewUpdate(){
+        this.totalView++;
+    }
+
     public void delete() {
         this.deleteCheck = true;
     }
