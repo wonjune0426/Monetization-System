@@ -1,7 +1,6 @@
 package com.example.Monetization.System.repository;
 
 import com.example.Monetization.System.dto.response.VideoTopViewResponseDto;
-import com.example.Monetization.System.dto.response.VideoTopWatchTimeResponseDto;
 import com.example.Monetization.System.entity.Member;
 import com.example.Monetization.System.entity.Video;
 import org.springframework.data.domain.Pageable;
@@ -28,13 +27,5 @@ public interface VideoRepository extends JpaRepository<Video, UUID> {
             Pageable pageable
     );
 
-    @Query("SELECT new com.example.Monetization.System.dto.response.VideoTopWatchTimeResponseDto(v.videoId, v.videoName, v.videoDescription, v.videoLength, SUM(vs.videoView) as totalWatchTime) " +
-            "FROM VideoStatistics vs " +
-            "JOIN vs.video v " +
-            "WHERE v.member = :member " +
-            "AND v.createdAt BETWEEN :startDate AND :endDate " +
-            "GROUP BY v.videoId " +
-            "ORDER BY SUM(vs.videoView) DESC")
-    List<VideoTopWatchTimeResponseDto> findTop5WatchTimeVideosByMemberAndDateRange(@Param("member") Member member, @Param("startDate") LocalDate startDate,
-                                                                         @Param("endDate") LocalDate endDate, Pageable pageable);
+    List<Video> findAllByMember(Member member);
 }

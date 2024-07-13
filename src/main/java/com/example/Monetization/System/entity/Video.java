@@ -15,12 +15,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Video extends MainTimestamped {
     @Id
-    @GeneratedValue
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID videoId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(nullable = false, length = 100)
@@ -52,7 +51,7 @@ public class Video extends MainTimestamped {
         this.videoDescription = videoDescription;
     }
 
-    public void totalViewUpdate(){
+    public void totalViewUpdate() {
         this.totalView++;
     }
 

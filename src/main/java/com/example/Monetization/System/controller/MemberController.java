@@ -49,6 +49,16 @@ public class MemberController {
         return ResponseEntity.ok( memberService.topWatchTime(period, memberDetails));
     }
 
+    @GetMapping("/calculate/{period}")
+    @Secured(MemberRoleEnum.Authority.SELLER)
+    public ResponseEntity<?> calculate(@PathVariable(name = "period")String period, @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        if (!VALID_PERIODS.contains(period)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid period. Must be 'day', 'week', or 'month'.");
+        }
+        return ResponseEntity.ok( memberService.calculate(period, memberDetails));
+    }
+
+
 
 
 
