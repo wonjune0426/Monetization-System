@@ -19,4 +19,8 @@ public class AdViewHistory extends CreateTimestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_ad_id")
     private VideoAd videoAd;
+
+    public AdViewHistory(VideoAd videoAd) {
+        this.videoAd = videoAd;
+    }
 }

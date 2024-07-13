@@ -2,13 +2,11 @@ package com.example.Monetization.System.service;
 
 import com.example.Monetization.System.dto.request.ad.AdAddRequestDto;
 import com.example.Monetization.System.dto.request.ad.CreateAdRequestDto;
-import com.example.Monetization.System.entity.Ad;
-import com.example.Monetization.System.entity.Member;
-import com.example.Monetization.System.entity.Video;
-import com.example.Monetization.System.entity.VideoAd;
+import com.example.Monetization.System.entity.*;
 import com.example.Monetization.System.exception.AdNotFoundException;
 import com.example.Monetization.System.exception.VideoNotFoundException;
 import com.example.Monetization.System.repository.AdRepository;
+import com.example.Monetization.System.repository.AdViewHistoryRepository;
 import com.example.Monetization.System.repository.VideoAdRepository;
 import com.example.Monetization.System.repository.VideoRepository;
 import com.example.Monetization.System.security.MemberDetailsImpl;
@@ -25,6 +23,7 @@ public class AdService {
     private final AdRepository adRepository;
     private final VideoRepository videoRepository;
     private final VideoAdRepository videoAdRepository;
+    private final AdViewHistoryRepository adViewHistoryRepository;
 
 
     public String createAd(CreateAdRequestDto createAdRequestDto, MemberDetailsImpl memberDetails) {
@@ -76,6 +75,8 @@ public class AdService {
                     ()->new IllegalArgumentException("해당 영상에 광고가 등록되지 않았습니다")
             );
             if(videoAd.getDeleteCheck()) return "해당 영상이 제거 되었거나 광고가 제거 되었습니다";
+            AdViewHistory adViewHistory = new AdViewHistory(videoAd);
+            adViewHistoryRepository.save(adViewHistory);
             videoAd.viewUpdate();
         }
 
