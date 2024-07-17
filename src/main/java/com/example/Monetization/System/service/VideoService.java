@@ -153,7 +153,7 @@ public class VideoService {
     }
 
     // video를 시청한 기록을 확인하는 메서드
-    private boolean videoViewMember(UUID videoId, String memberId) {
+    private boolean videoViewMember(UUID videoId, Long memberId) {
         String key = "viedoViewMember : " + videoId + "_" + memberId;
 
         if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
@@ -165,7 +165,7 @@ public class VideoService {
     }
 
     // 마지막 시청 시간을 확인하는 메서드
-    private Long lastWatchTimeCheck(UUID videoId, String memberId) {
+    private Long lastWatchTimeCheck(UUID videoId, Long memberId) {
         String key = "lastWatchTime : " + videoId + "_" + memberId;
         if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
             return redisTemplate.opsForValue().get(key);
@@ -176,7 +176,7 @@ public class VideoService {
     }
 
     // 마지막 시청시간 기록
-    private void updateLastWatchTime(UUID videoId, String memberId, Long lastWatchTime) {
+    private void updateLastWatchTime(UUID videoId, Long memberId, Long lastWatchTime) {
         String key = "lastWatchTime : " + videoId + "_" + memberId;
         redisTemplate.opsForValue().set(key, lastWatchTime, 1, TimeUnit.DAYS);
     }

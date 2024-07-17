@@ -43,21 +43,20 @@ public class MemberService {
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
         // 회원 중복 확인
-        Optional<Member> checkMember = memberRepository.findById(signupRequestDto.getMemberId());
+        Optional<Member> checkMember = memberRepository.findById(signupRequestDto.getMemberEmail());
         if (checkMember.isPresent()) {
             return "중복된 사용자가 존재합니다.";
-        }
-        ;
+        };
 
 
         MemberRoleEnum authority = MemberRoleEnum.BUYER;
         if (signupRequestDto.getAuthority()) authority = MemberRoleEnum.SELLER;
 
         // 회원 가입 확인
-        Member member = new Member(signupRequestDto.getMemberId(),
+        Member member = new Member(signupRequestDto.getMemberEmail(),
                 password,
                 authority,
-                signupRequestDto.getSocial(), false);
+                signupRequestDto.getSocial());
         memberRepository.save(member);
 
         return "회원 가입 성공";

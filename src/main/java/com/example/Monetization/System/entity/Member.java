@@ -13,7 +13,11 @@ import lombok.NoArgsConstructor;
 public class Member extends MainTimestamped {
 
     @Id
-    private String memberId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long memberId;
+
+    @Column(nullable = false)
+    private String memberEmail;
 
     @Column(nullable = false)
     private String password;
@@ -27,4 +31,12 @@ public class Member extends MainTimestamped {
 
     @Column(nullable = false)
     private Boolean deleteCheck;
+
+    public Member(String memberEmail, String password, MemberRoleEnum authority, String social) {
+        this.memberEmail = memberEmail;
+        this.password = password;
+        this.authority = authority;
+        this.social = social;
+        this.deleteCheck = false;
+    }
 }

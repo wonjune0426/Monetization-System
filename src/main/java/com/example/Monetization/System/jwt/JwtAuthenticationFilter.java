@@ -5,7 +5,6 @@ import com.example.Monetization.System.entity.MemberRoleEnum;
 import com.example.Monetization.System.security.MemberDetailsImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +47,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         log.info("로그인 성공 및 JWT 생성");
-        String username = ((MemberDetailsImpl) authResult.getPrincipal()).getUsername();
+        String memberEmail = ((MemberDetailsImpl) authResult.getPrincipal()).getUsername();
         MemberRoleEnum authority = ((MemberDetailsImpl) authResult.getPrincipal()).getMember().getAuthority();
-        String token = jwtUtil.createToken(username,authority);
+        String token = jwtUtil.createToken(memberEmail,authority);
         jwtUtil.addJwtToCookie(token, response);
     }
 

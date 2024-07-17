@@ -40,6 +40,6 @@ public class MemberDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getMemberId();
+        return member.getMemberEmail();
     }
 }
