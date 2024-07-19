@@ -28,6 +28,7 @@
 - AWS 배포 작업 후 추가 
 
 ### 📊 ERD
+https://drawsql.app/teams/team-3679/diagrams/erd
 ![drawSQL-image-export-2024-07-19](https://github.com/user-attachments/assets/ab0b3974-2622-472f-8f2a-eeead452b209)
 
 ### 🗒API 명세
