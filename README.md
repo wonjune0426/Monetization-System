@@ -4,7 +4,7 @@
 동영상을 등록하고 해당 동영상과 광고 조회수를 통해 <br>
 일 배치로 통계 데이터와 정산 데이터를 추출하는 시스템입니다.
 
-배치 프로젝트: 
+배치 프로젝트: https://github.com/wonjune0426/Monetization-System_Batch
 
 ### 🛠 기술스택
 <img src="https://img.shields.io/badge/language-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/java-%23ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"><img src="https://img.shields.io/badge/21-515151?style=for-the-badge">
