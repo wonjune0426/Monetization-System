@@ -34,4 +34,6 @@ https://drawsql.app/teams/team-3679/diagrams/erd
 ### 🗒API 명세
 - Swagger URL 추가
 
+### 동시성 제어
+- 내용 추가
 
