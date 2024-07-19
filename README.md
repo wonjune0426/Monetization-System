@@ -12,12 +12,12 @@
 <img src="https://img.shields.io/badge/framework-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"><img src="https://img.shields.io/badge/3.3.0-515151?style=for-the-badge">
 <img src="https://img.shields.io/badge/springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"><img src="https://img.shields.io/badge/6.3.0-515151?style=for-the-badge">
 <br>
-<img src="https://img.shields.io/badge/Containers and Deployment-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"><img src="https://img.shields.io/badge/6.3.0-515151?style=for-the-badge">
+<img src="https://img.shields.io/badge/Containers and Deployment-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"><img src="https://img.shields.io/badge/26.1.4-515151?style=for-the-badge">
 <br>
 <img src="https://img.shields.io/badge/CI/CD-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/githubactions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white">
 <br>
-<img src="https://img.shields.io/badge/DB-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><img src="https://img.shields.io/badge/6.3.0-515151?style=for-the-badge">
-<img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/6.3.0-515151?style=for-the-badge">
+<img src="https://img.shields.io/badge/DB-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><img src="https://img.shields.io/badge/8.4.1-515151?style=for-the-badge">
+<img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/3.3.0-515151?style=for-the-badge">
 
 ### ‼ 핵심 기능 
 - JWT/Spring Security를 통한 인증/인가
