@@ -19,10 +19,18 @@
 <img src="https://img.shields.io/badge/DB-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><img src="https://img.shields.io/badge/6.3.0-515151?style=for-the-badge">
 <img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/6.3.0-515151?style=for-the-badge">
 
-### 📋 ERD
+### ‼ 핵심 기능 
+- JWT/Spring Security를 통한 인증/인가
+- CQRS 패턴을 통한 DB 부하 분산
+- Redis를 통해 어뷰징 방지 및 마지막 시청 시간 관리
 
-### Structure
+### ⚙ Structure
+- AWS 배포 작업 후 추가 
+
+### 📊 ERD
+![drawSQL-image-export-2024-07-19 (1)](https://github.com/user-attachments/assets/dc4002d6-5884-4b04-88cc-c0ecf9c0d876)
 
 ### 🗒API 명세
 
-### 핵심 기능 
+
+
