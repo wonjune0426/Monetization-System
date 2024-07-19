@@ -28,7 +28,7 @@
 - AWS 배포 작업 후 추가 
 
 ### 📊 ERD
-![drawSQL-image-export-2024-07-19 (1)](https://github.com/user-attachments/assets/dc4002d6-5884-4b04-88cc-c0ecf9c0d876)
+![drawSQL-image-export-2024-07-19](https://github.com/user-attachments/assets/ab0b3974-2622-472f-8f2a-eeead452b209)
 
 ### 🗒API 명세
 
