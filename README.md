@@ -11,6 +11,7 @@
 <br>
 <img src="https://img.shields.io/badge/framework-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"><img src="https://img.shields.io/badge/3.3.0-515151?style=for-the-badge">
 <img src="https://img.shields.io/badge/springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"><img src="https://img.shields.io/badge/6.3.0-515151?style=for-the-badge">
+<img src="https://img.shields.io/badge/springbatch-6DB33F?style=for-the-badge&logo=springbatch&logoColor=white"><img src="https://img.shields.io/badge/5.1.2-515151?style=for-the-badge">
 <br>
 <img src="https://img.shields.io/badge/Containers and Deployment-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"><img src="https://img.shields.io/badge/26.1.4-515151?style=for-the-badge">
 <br>
@@ -23,6 +24,13 @@
 - JWT/Spring Security를 통한 인증/인가
 - CQRS 패턴을 통한 DB 부하 분산
 - Redis를 통해 어뷰징 방지 및 마지막 시청 시간 관리
+- Spring Batch를 통한 비디오와 광고에 대한 통계 및 정산을 실시
+
+### 성능개선
+- spring batch 병렬처리 관련 내용 추가
+
+### 동시성처
+- 동시성 처리 관련 내용 추가
 
 ### ⚙ Structure
 - AWS 배포 작업 후 추가 
@@ -32,8 +40,6 @@ https://drawsql.app/teams/team-3679/diagrams/erd
 ![drawSQL-image-export-2024-07-19](https://github.com/user-attachments/assets/ab0b3974-2622-472f-8f2a-eeead452b209)
 
 ### 🗒API 명세
-- Swagger URL 추가
+- https://documenter.getpostman.com/view/19618546/2sA3kUG2cw
 
-### 동시성 제어
-- 내용 추가
 
