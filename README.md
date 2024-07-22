@@ -20,6 +20,9 @@
 <img src="https://img.shields.io/badge/DB-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><img src="https://img.shields.io/badge/8.4.1-515151?style=for-the-badge">
 <img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/3.3.0-515151?style=for-the-badge">
 
+### 디렉토리 구조 
+- Tree구조로 추가
+
 ### ⚙ Structure
 - AWS 배포 작업 후 추가 
 
