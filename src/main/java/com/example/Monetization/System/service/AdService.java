@@ -49,10 +49,14 @@ public class AdService {
                 () -> new AdNotFoundException("존재 하지 않는 광고 입니다.")
         );
 
+        if(ad.getDeleteCheck()) throw new AdNotFoundException("존재 하지 않는 광고 입니다.");
+
         for (UUID videoId : adAddRequestDto.getVideoIds()) {
             Video video = read_videoRepository.findById(videoId).orElseThrow(
                     () -> new VideoNotFoundException("존재 하지 않는 영상입니다.")
             );
+
+            if(read_videoAdRepository.findVideoAdByVideoAndAd(video, ad).isPresent()) continue;
 
             if (video.getMember().getMemberId().equals(member.getMemberId())){
                 VideoAd videoAd = new VideoAd(video,ad);
@@ -82,7 +86,11 @@ public class AdService {
             VideoAd videoAd = read_videoAdRepository.findVideoAdByVideoAndAd(video,ad).orElseThrow(
                     ()->new IllegalArgumentException("해당 영상에 광고가 등록되지 않았습니다")
             );
+
             if(videoAd.getDeleteCheck()) throw new AdNotFoundException("존재하지 않는 광고 입니다.");
+
+
+
             AdViewHistory adViewHistory = new AdViewHistory(videoAd);
             write_adViewHistoryRepository.save(adViewHistory);
             videoAd.viewUpdate();
@@ -99,6 +107,7 @@ public class AdService {
         );
 
         ad.delete();
+        write_adRepository.save(ad);
 
         List<VideoAd> videoAdList = read_videoAdRepository.findAllByAd(ad);
         for(VideoAd videoAd : videoAdList){
