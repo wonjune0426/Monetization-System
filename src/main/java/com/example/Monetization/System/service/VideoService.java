@@ -4,6 +4,7 @@ package com.example.monetization.system.service;
 import com.example.monetization.system.dto.request.video.CreateVideoRequestDto;
 import com.example.monetization.system.dto.request.video.PauseVideoRequestDto;
 import com.example.monetization.system.dto.request.video.UpdateVideoRequestDto;
+import com.example.monetization.system.dto.response.ResponseEntityDto;
 import com.example.monetization.system.dto.response.VideoViewResponseDto;
 import com.example.monetization.system.entity.Member;
 import com.example.monetization.system.entity.Video;
@@ -13,11 +14,14 @@ import com.example.monetization.system.exception.VideoDeleteException;
 import com.example.monetization.system.exception.VideoNotFoundException;
 import com.example.monetization.system.repository.read.Read_VideoAdRepository;
 import com.example.monetization.system.repository.read.Read_VideoRepository;
+import com.example.monetization.system.repository.write.Write_VideoAdRepository;
 import com.example.monetization.system.repository.write.Write_VideoRepository;
 import com.example.monetization.system.repository.write.Write_VideoViewHistoryRepository;
 import com.example.monetization.system.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,14 +35,15 @@ import java.util.concurrent.TimeUnit;
 public class VideoService {
     private final RedisTemplate<String, Long> redisTemplate;
 
-    private final Write_VideoRepository writeVideoAdRepository;
+    private final Write_VideoRepository write_videoRepository;
     private final Write_VideoViewHistoryRepository write_videoViewHistoryRepository;
+    private final Write_VideoAdRepository write_videoAdRepository;
 
     private final Read_VideoRepository read_videoRepository;
     private final Read_VideoAdRepository read_videoAdRepository;
 
     // Video 생성
-    public String createVideo(CreateVideoRequestDto createVideoRequestDto, MemberDetailsImpl memberDetails) {
+    public ResponseEntity<ResponseEntityDto<Void>> createVideo(CreateVideoRequestDto createVideoRequestDto, MemberDetailsImpl memberDetails) {
         // 현재 로그인 한 Member 정보를 받아옴
         Member member = memberDetails.getMember();
 
@@ -46,34 +51,13 @@ public class VideoService {
         Video video = new Video(member, createVideoRequestDto.getVideoName(), createVideoRequestDto.getVideoDescription(), createVideoRequestDto.getVideoLength());
 
         //  Video 객체 저장
-        writeVideoAdRepository.save(video);
+        write_videoRepository.save(video);
 
-        return "Video 생성 성공";
+        return ResponseEntity.ok(new ResponseEntityDto<>("video 생성 성공"));
     }
 
     @Transactional
-    public String updateVideo(UUID videoId, UpdateVideoRequestDto updateVideoRequestDto, MemberDetailsImpl memberDetails) {
-        // 현재 로그인 한 Member 정보
-        Member member = memberDetails.getMember();
-
-        // video 존재 여부 확인
-        Video video = read_videoRepository.findById(videoId).orElseThrow(
-                ()->new VideoNotFoundException("존재하지 않는 영상입니다")
-        );
-
-        //삭제 여부 확인
-        if(video.getDeleteCheck()) return "삭제된 영상입니다.";
-
-        // video를 게사한 member와 로그인한 member 일치 여부 확인
-        if(!member.getMemberId().equals(video.getMember().getMemberId())) return "본인의 영상만 수정할 수 있습니다.";
-
-        video.update(updateVideoRequestDto.getVideoName(),updateVideoRequestDto.getVideoDescription());
-        return "비디오 수정 성공";
-    }
-
-    // 비디오 삭제
-    @Transactional
-    public String deleteVide(UUID videoId, MemberDetailsImpl memberDetails) throws VideoDeleteException {
+    public ResponseEntity<ResponseEntityDto<Void>> updateVideo(UUID videoId, UpdateVideoRequestDto updateVideoRequestDto, MemberDetailsImpl memberDetails) {
         // 현재 로그인 한 Member 정보
         Member member = memberDetails.getMember();
 
@@ -86,15 +70,41 @@ public class VideoService {
         if(video.getDeleteCheck()) throw new VideoDeleteException("삭제된 영상입니다.");
 
         // video를 게사한 member와 로그인한 member 일치 여부 확인
-        if(!member.getMemberId().equals(video.getMember().getMemberId())) return "본인의 영상만 삭제할 수 있습니다";
+        if(!member.getMemberId().equals(video.getMember().getMemberId()))
+           return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseEntityDto<>("본인의 영상만 수정할 수 있습니다."));
+
+
+        video.update(updateVideoRequestDto.getVideoName(),updateVideoRequestDto.getVideoDescription());
+        write_videoRepository.save(video);
+        return ResponseEntity.ok(new ResponseEntityDto<>("영상 수정 성공"));
+    }
+
+    // 비디오 삭제
+    @Transactional
+    public ResponseEntity<ResponseEntityDto<Void>> deleteVideo(UUID videoId, MemberDetailsImpl memberDetails) throws VideoDeleteException {
+        // 현재 로그인 한 Member 정보
+        Member member = memberDetails.getMember();
+
+        // video 존재 여부 확인
+        Video video = read_videoRepository.findById(videoId).orElseThrow(
+                ()->new VideoNotFoundException("존재하지 않는 영상입니다")
+        );
+
+        //삭제 여부 확인
+        if(video.getDeleteCheck()) throw new VideoDeleteException("삭제된 영상입니다.");
+
+        // video를 게사한 member와 로그인한 member 일치 여부 확인
+        if(!member.getMemberId().equals(video.getMember().getMemberId()))
+           return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseEntityDto<>("본인의 영상만 수정할 수 있습니다."));
 
         video.delete();
         List<VideoAd> videoAdList = read_videoAdRepository.findAllByVideo(video);
         for(VideoAd videoAd : videoAdList) {
             videoAd.delete();
+            write_videoAdRepository.save(videoAd);
         }
 
-        return "비디오 삭제 성공";
+        return ResponseEntity.ok(new ResponseEntityDto<>("영상 삭제 성공"));
     }
 
     // Video 시청
@@ -126,7 +136,7 @@ public class VideoService {
 
     // Vdieo 중단
     @Transactional
-    public String videoPause(UUID videoId, MemberDetailsImpl memberDetails, PauseVideoRequestDto pauseVideoRequestDto) {
+    public ResponseEntity<ResponseEntityDto<Void>> videoPause(UUID videoId, MemberDetailsImpl memberDetails, PauseVideoRequestDto pauseVideoRequestDto) {
         // 로그인한 member 확인
         Member member = memberDetails.getMember();
 
@@ -147,13 +157,14 @@ public class VideoService {
             VideoViewHistory videoViewHistory = new VideoViewHistory(member,video,watchTime);
             write_videoViewHistoryRepository.save(videoViewHistory);
             video.totalViewUpdate();
+            write_videoRepository.save(video);
         }
 
         // 중단 시간이 영상의 길이와 같을 경우 0으로 초기화
         if(Objects.equals(pauseTime, video.getVideoLength())) pauseTime = 0L;
 
         updateLastWatchTime(videoId, member.getMemberId(), pauseTime);
-        return "Vide 시청 기록 완료";
+        return ResponseEntity.ok(new ResponseEntityDto<>("영상이 중지 되었습니다."));
     }
 
     // video를 시청한 기록을 확인하는 메서드

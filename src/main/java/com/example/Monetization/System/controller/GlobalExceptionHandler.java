@@ -1,6 +1,9 @@
 package com.example.monetization.system.controller;
 
 
+import com.example.monetization.system.dto.response.ResponseEntityDto;
+import com.example.monetization.system.exception.AdNotFoundException;
+import com.example.monetization.system.exception.JwtValidationException;
 import com.example.monetization.system.exception.VideoDeleteException;
 import com.example.monetization.system.exception.VideoNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -28,12 +31,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(VideoNotFoundException.class)
-    public ResponseEntity<String> handleVideoNotFoundException(VideoNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ResponseEntityDto<Void>> handleVideoNotFoundException(VideoNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseEntityDto<>(ex.getMessage()));
     }
 
     @ExceptionHandler(VideoDeleteException.class)
-    public ResponseEntity<String> handleVideoDeleteException(VideoDeleteException ex){
-        return ResponseEntity.status(HttpStatus.GONE).body(ex.getMessage());
+    public ResponseEntity<ResponseEntityDto<Void>> handleVideoDeleteException(VideoDeleteException ex){
+        return ResponseEntity.status(HttpStatus.GONE).body(new ResponseEntityDto<>(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AdNotFoundException.class)
+    public ResponseEntity<ResponseEntityDto<Void>> handleAdNotFoundException(AdNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseEntityDto<>(ex.getMessage()));
+    }
+
+    @ExceptionHandler(JwtValidationException.class)
+    public ResponseEntity<ResponseEntityDto<Void>> handleJwtValidationException(JwtValidationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseEntityDto<>(ex.getMessage()));
     }
 }

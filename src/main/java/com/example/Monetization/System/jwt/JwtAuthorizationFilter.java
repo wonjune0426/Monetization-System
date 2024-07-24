@@ -1,6 +1,7 @@
 package com.example.monetization.system.jwt;
 
 
+import com.example.monetization.system.exception.JwtValidationException;
 import com.example.monetization.system.security.MemberDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -41,7 +42,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             if (!jwtUtil.validateToken(tokenValue)) {
                 log.error("Token Error");
-                return;
+                throw new JwtValidationException("token 만료");
             }
 
             Claims info = jwtUtil.getUserInfoFromToken(tokenValue);

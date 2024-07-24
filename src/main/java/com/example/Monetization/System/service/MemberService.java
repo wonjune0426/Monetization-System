@@ -4,6 +4,7 @@ package com.example.monetization.system.service;
 import com.example.monetization.system.dto.VideoAmountDto;
 import com.example.monetization.system.dto.request.member.SignupRequestDto;
 import com.example.monetization.system.dto.response.CalculateResponseDto;
+import com.example.monetization.system.dto.response.ResponseEntityDto;
 import com.example.monetization.system.dto.response.VideoTopViewResponseDto;
 import com.example.monetization.system.dto.response.VideoTopWatchTimeResponseDto;
 import com.example.monetization.system.entity.Member;
@@ -21,6 +22,8 @@ import com.example.monetization.system.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,13 +46,13 @@ public class MemberService {
     private final Read_VideoAdRepository read_videoAdRepository;
     private final Read_AdCalculateRepository read_adCalculateRepository;
 
-    public String signup(SignupRequestDto signupRequestDto) {
+    public ResponseEntity<ResponseEntityDto<Void>> signup(SignupRequestDto signupRequestDto) {
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
         // 회원 중복 확인
         Optional<Member> checkMember = read_memberRepository.findByMemberEmail(signupRequestDto.getMemberEmail());
         if (checkMember.isPresent()) {
-            return "중복된 사용자가 존재합니다.";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseEntityDto<>("중복된 사용자가 존재합니다."));
         }
 
         MemberRoleEnum authority = MemberRoleEnum.BUYER;
@@ -62,7 +65,7 @@ public class MemberService {
                 signupRequestDto.getSocial());
         write_memberRepository.save(member);
 
-        return "회원 가입 성공";
+        return ResponseEntity.ok(new ResponseEntityDto<>("회원가입 성공"));
     }
 
     public List<VideoTopViewResponseDto> topView(String period, MemberDetailsImpl memberDetails) {
