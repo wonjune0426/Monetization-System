@@ -1,4 +1,4 @@
-package com.example.Monetization.System.entity;
+package com.example.monetization.system.entity;
 
 import lombok.Getter;
 

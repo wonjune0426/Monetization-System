@@ -1,19 +1,20 @@
-package com.example.Monetization.System.repository.statisitcs;
+package com.example.monetization.system.repository.read.statisitcs;
 
-import com.example.Monetization.System.dto.response.VideoTopWatchTimeResponseDto;
-import com.example.Monetization.System.entity.Member;
-import com.example.Monetization.System.entity.statisitcs.VideoStatistics;
+import com.example.monetization.system.dto.response.VideoTopWatchTimeResponseDto;
+import com.example.monetization.system.entity.Member;
+import com.example.monetization.system.entity.statisitcs.VideoStatistics;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
+import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface VideoStatisticsRepository extends JpaRepository<VideoStatistics, Long> {
+@Repository
+public interface Read_VideoStatisticsRepository extends JpaRepository<VideoStatistics, Long> {
 
-    @Query("SELECT new com.example.Monetization.System.dto.response.VideoTopWatchTimeResponseDto(v.videoId, v.videoName, v.videoDescription, v.videoLength, SUM(vs.videoView) as totalWatchTime) " +
+    @Query("SELECT new com.example.monetization.system.dto.response.VideoTopWatchTimeResponseDto(v.videoId, v.videoName, v.videoDescription, v.videoLength, SUM(vs.videoView) as totalWatchTime) " +
             "FROM VideoStatistics vs " +
             "JOIN vs.video v " +
             "WHERE v.member = :member " +

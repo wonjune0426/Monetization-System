@@ -1,6 +1,7 @@
-package com.example.Monetization.System.dto;
+package com.example.monetization.system.dto;
 
-import com.example.Monetization.System.entity.Video;
+
+import com.example.monetization.system.entity.Video;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -1,6 +1,7 @@
-package com.example.Monetization.System.jwt;
+package com.example.monetization.system.jwt;
 
-import com.example.Monetization.System.security.MemberDetailsServiceImpl;
+
+import com.example.monetization.system.security.MemberDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -57,17 +58,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     // 인증 처리
-    public void setAuthentication(String memberId) {
+    public void setAuthentication(String memberEmail) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(memberId);
+        Authentication authentication = createAuthentication(memberEmail);
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String memberId) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(memberId);
+    private Authentication createAuthentication(String memberEmail) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(memberEmail);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

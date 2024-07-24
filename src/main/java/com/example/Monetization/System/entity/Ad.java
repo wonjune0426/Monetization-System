@@ -1,7 +1,11 @@
-package com.example.Monetization.System.entity;
+package com.example.monetization.system.entity;
 
-import com.example.Monetization.System.entity.timestapm.MainTimestamped;
-import jakarta.persistence.*;
+
+import com.example.monetization.system.entity.timestapm.MainTimestamped;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

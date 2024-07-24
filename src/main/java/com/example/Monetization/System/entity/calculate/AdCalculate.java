@@ -1,6 +1,7 @@
-package com.example.Monetization.System.entity.calculate;
+package com.example.monetization.system.entity.calculate;
 
-import com.example.Monetization.System.entity.VideoAd;
+
+import com.example.monetization.system.entity.VideoAd;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,8 +28,4 @@ public class AdCalculate{
     @Column(nullable = false)
     private LocalDate createdAt = LocalDate.now().minusDays(1);
 
-    public AdCalculate(VideoAd videoAd, Long adAmount) {
-        this.videoAd = videoAd;
-        this.adAmount = adAmount;
-    }
 }

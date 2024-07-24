@@ -1,21 +1,23 @@
-package com.example.Monetization.System.service;
+package com.example.monetization.system.service;
 
-import com.example.Monetization.System.dto.VideoAmountDto;
-import com.example.Monetization.System.dto.request.member.SignupRequestDto;
-import com.example.Monetization.System.dto.response.CalculateResponseDto;
-import com.example.Monetization.System.dto.response.VideoTopViewResponseDto;
-import com.example.Monetization.System.dto.response.VideoTopWatchTimeResponseDto;
-import com.example.Monetization.System.entity.Member;
-import com.example.Monetization.System.entity.MemberRoleEnum;
-import com.example.Monetization.System.entity.Video;
-import com.example.Monetization.System.entity.VideoAd;
-import com.example.Monetization.System.repository.MemberRepository;
-import com.example.Monetization.System.repository.VideoAdRepository;
-import com.example.Monetization.System.repository.VideoRepository;
-import com.example.Monetization.System.repository.calculate.AdCalculateRepository;
-import com.example.Monetization.System.repository.calculate.VideoCalculateRepository;
-import com.example.Monetization.System.repository.statisitcs.VideoStatisticsRepository;
-import com.example.Monetization.System.security.MemberDetailsImpl;
+
+import com.example.monetization.system.dto.VideoAmountDto;
+import com.example.monetization.system.dto.request.member.SignupRequestDto;
+import com.example.monetization.system.dto.response.CalculateResponseDto;
+import com.example.monetization.system.dto.response.VideoTopViewResponseDto;
+import com.example.monetization.system.dto.response.VideoTopWatchTimeResponseDto;
+import com.example.monetization.system.entity.Member;
+import com.example.monetization.system.entity.MemberRoleEnum;
+import com.example.monetization.system.entity.Video;
+import com.example.monetization.system.entity.VideoAd;
+import com.example.monetization.system.repository.read.Read_MemberRepository;
+import com.example.monetization.system.repository.read.Read_VideoAdRepository;
+import com.example.monetization.system.repository.read.Read_VideoRepository;
+import com.example.monetization.system.repository.read.calculate.Read_AdCalculateRepository;
+import com.example.monetization.system.repository.read.calculate.Read_VideoCalculateRepository;
+import com.example.monetization.system.repository.read.statisitcs.Read_VideoStatisticsRepository;
+import com.example.monetization.system.repository.write.Write_MemberRepository;
+import com.example.monetization.system.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,24 +32,25 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-
-    private final MemberRepository memberRepository;
-    private final VideoRepository videoRepository;
-    private final VideoStatisticsRepository videoStatisticsRepository;
-    private final VideoCalculateRepository videoCalculateRepository;
-    private final VideoAdRepository videoAdRepository;
-    private final AdCalculateRepository adCalculateRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final Write_MemberRepository write_memberRepository;
+
+    private final Read_MemberRepository read_memberRepository;
+    private final Read_VideoRepository read_videoRepository;
+    private final Read_VideoStatisticsRepository read_videoStatisticsRepository;
+    private final Read_VideoCalculateRepository read_videoCalculateRepository;
+    private final Read_VideoAdRepository read_videoAdRepository;
+    private final Read_AdCalculateRepository read_adCalculateRepository;
 
     public String signup(SignupRequestDto signupRequestDto) {
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
         // 회원 중복 확인
-        Optional<Member> checkMember = memberRepository.findById(signupRequestDto.getMemberEmail());
+        Optional<Member> checkMember = read_memberRepository.findByMemberEmail(signupRequestDto.getMemberEmail());
         if (checkMember.isPresent()) {
             return "중복된 사용자가 존재합니다.";
-        };
-
+        }
 
         MemberRoleEnum authority = MemberRoleEnum.BUYER;
         if (signupRequestDto.getAuthority()) authority = MemberRoleEnum.SELLER;
@@ -57,7 +60,7 @@ public class MemberService {
                 password,
                 authority,
                 signupRequestDto.getSocial());
-        memberRepository.save(member);
+        write_memberRepository.save(member);
 
         return "회원 가입 성공";
     }
@@ -67,7 +70,7 @@ public class MemberService {
         LocalDate[] dateRanges = dateRange(period);
 
         Pageable top5 = PageRequest.of(0, 5);
-        return videoRepository.findTop5ViewVideosByMemberAndDateRange(member, dateRanges[0], dateRanges[1], top5);
+        return read_videoRepository.findTop5ViewVideosByMemberAndDateRange(member, dateRanges[0], dateRanges[1], top5);
     }
 
     public List<VideoTopWatchTimeResponseDto> topWatchTime(String period, MemberDetailsImpl memberDetails) {
@@ -75,7 +78,7 @@ public class MemberService {
 
         LocalDate[] dateRanges = dateRange(period);
         Pageable top5 = PageRequest.of(0, 5);
-        return videoStatisticsRepository.findTop5WatchTimeVideosByMemberAndDateRange(member, dateRanges[0], dateRanges[1], top5);
+        return read_videoStatisticsRepository.findTop5WatchTimeVideosByMemberAndDateRange(member, dateRanges[0], dateRanges[1], top5);
     }
 
     public List<CalculateResponseDto> calculate(String period, MemberDetailsImpl memberDetails) {
@@ -88,16 +91,16 @@ public class MemberService {
         List<CalculateResponseDto> calculateResponseDtoList = new ArrayList<>();
 
         // 해당 member의 등록 video 조회
-        List<Video> videoList = videoRepository.findAllByMember(member);
+        List<Video> videoList = read_videoRepository.findAllByMember(member);
 
         // 비디오와 정산 금액을 조회
-        List<VideoAmountDto> videoCalculateList = videoCalculateRepository.findAllByVideoAndDateRange(videoList, dateRanges[0], dateRanges[1]);
+        List<VideoAmountDto> videoCalculateList = read_videoCalculateRepository.findAllByVideoAndDateRange(videoList, dateRanges[0], dateRanges[1]);
 
         for(VideoAmountDto videoAmountDto : videoCalculateList) {
             Video video = videoAmountDto.getVideo();
 
-            List<VideoAd> videoAdList = videoAdRepository.findAllByVideo(video);
-            Long adAmount  = adCalculateRepository.findAmountByVideoAdListAndDateRange(videoAdList, dateRanges[0], dateRanges[1]);
+            List<VideoAd> videoAdList = read_videoAdRepository.findAllByVideo(video);
+            Long adAmount  = read_adCalculateRepository.findAmountByVideoAdListAndDateRange(videoAdList, dateRanges[0], dateRanges[1]);
 
             CalculateResponseDto calculateResponseDto = new CalculateResponseDto();
             calculateResponseDto.setVideoId(video.getVideoId());

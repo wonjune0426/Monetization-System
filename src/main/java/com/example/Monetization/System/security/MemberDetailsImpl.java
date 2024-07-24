@@ -1,7 +1,9 @@
-package com.example.Monetization.System.security;
+package com.example.monetization.system.security;
 
-import com.example.Monetization.System.entity.Member;
-import com.example.Monetization.System.entity.MemberRoleEnum;
+
+
+import com.example.monetization.system.entity.Member;
+import com.example.monetization.system.entity.MemberRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

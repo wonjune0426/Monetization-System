@@ -1,9 +1,9 @@
-package com.example.Monetization.System.configuration;
+package com.example.monetization.system.configuration;
 
-import com.example.Monetization.System.jwt.JwtAuthenticationFilter;
-import com.example.Monetization.System.jwt.JwtAuthorizationFilter;
-import com.example.Monetization.System.jwt.JwtUtil;
-import com.example.Monetization.System.security.MemberDetailsServiceImpl;
+import com.example.monetization.system.jwt.JwtAuthenticationFilter;
+import com.example.monetization.system.jwt.JwtAuthorizationFilter;
+import com.example.monetization.system.jwt.JwtUtil;
+import com.example.monetization.system.security.MemberDetailsServiceImpl;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,13 +68,13 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                        .requestMatchers("/members/login","/members/sign-up").permitAll() // 접근 허가 유형
+                        .requestMatchers("/members/login","/members/sign-up","/swagger-ui/**","/v3/**").permitAll() // 접근 허가 유형
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
         // 필터 관리
-            http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -1,10 +1,11 @@
-package com.example.Monetization.System.controller;
+package com.example.monetization.system.controller;
 
-import com.example.Monetization.System.dto.request.ad.AdAddRequestDto;
-import com.example.Monetization.System.dto.request.ad.CreateAdRequestDto;
-import com.example.Monetization.System.entity.MemberRoleEnum;
-import com.example.Monetization.System.security.MemberDetailsImpl;
-import com.example.Monetization.System.service.AdService;
+
+import com.example.monetization.system.dto.request.ad.AdAddRequestDto;
+import com.example.monetization.system.dto.request.ad.CreateAdRequestDto;
+import com.example.monetization.system.entity.MemberRoleEnum;
+import com.example.monetization.system.security.MemberDetailsImpl;
+import com.example.monetization.system.service.AdService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -29,7 +30,7 @@ public class AdController {
     // 비디오에 광고 등록
     @PostMapping("/{adId}")
     @Secured(MemberRoleEnum.Authority.SELLER)
-    public String videoAddAd(@PathVariable UUID adId, @RequestBody AdAddRequestDto adAddRequestDto,  @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+    public String videoAddAd(@PathVariable UUID adId, @RequestBody AdAddRequestDto adAddRequestDto, @AuthenticationPrincipal MemberDetailsImpl memberDetails){
         return adService.videoAddAd(adAddRequestDto,memberDetails,adId);
     }
 

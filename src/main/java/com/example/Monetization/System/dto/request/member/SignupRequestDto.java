@@ -1,4 +1,4 @@
-package com.example.Monetization.System.dto.request.member;
+package com.example.monetization.system.dto.request.member;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

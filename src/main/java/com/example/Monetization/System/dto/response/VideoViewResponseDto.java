@@ -1,4 +1,4 @@
-package com.example.Monetization.System.dto.response;
+package com.example.monetization.system.dto.response;
 
 import lombok.Data;
 

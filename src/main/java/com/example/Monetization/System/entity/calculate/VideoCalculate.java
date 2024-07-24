@@ -1,6 +1,7 @@
-package com.example.Monetization.System.entity.calculate;
+package com.example.monetization.system.entity.calculate;
 
-import com.example.Monetization.System.entity.Video;
+
+import com.example.monetization.system.entity.Video;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,9 +27,4 @@ public class VideoCalculate {
 
     @Column(nullable = false)
     private LocalDate createdAt = LocalDate.now().minusDays(1);
-
-    public VideoCalculate(Video video, Long videoAmount) {
-        this.video = video;
-        this.videoAmount = videoAmount;
-    }
 }

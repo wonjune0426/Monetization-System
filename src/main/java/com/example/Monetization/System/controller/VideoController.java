@@ -1,12 +1,13 @@
-package com.example.Monetization.System.controller;
+package com.example.monetization.system.controller;
 
-import com.example.Monetization.System.dto.request.video.CreateVideoRequestDto;
-import com.example.Monetization.System.dto.request.video.PauseVideoRequestDto;
-import com.example.Monetization.System.dto.request.video.UpdateVideoRequestDto;
-import com.example.Monetization.System.dto.response.VideoViewResponseDto;
-import com.example.Monetization.System.entity.MemberRoleEnum;
-import com.example.Monetization.System.security.MemberDetailsImpl;
-import com.example.Monetization.System.service.VideoService;
+
+import com.example.monetization.system.dto.request.video.CreateVideoRequestDto;
+import com.example.monetization.system.dto.request.video.PauseVideoRequestDto;
+import com.example.monetization.system.dto.request.video.UpdateVideoRequestDto;
+import com.example.monetization.system.dto.response.VideoViewResponseDto;
+import com.example.monetization.system.entity.MemberRoleEnum;
+import com.example.monetization.system.security.MemberDetailsImpl;
+import com.example.monetization.system.service.VideoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,18 +1,20 @@
-package com.example.Monetization.System.repository.calculate;
+package com.example.monetization.system.repository.read.calculate;
 
-import com.example.Monetization.System.dto.VideoAmountDto;
-import com.example.Monetization.System.entity.Video;
-import com.example.Monetization.System.entity.calculate.VideoCalculate;
+import com.example.monetization.system.dto.VideoAmountDto;
+import com.example.monetization.system.entity.Video;
+import com.example.monetization.system.entity.calculate.VideoCalculate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface VideoCalculateRepository extends JpaRepository<VideoCalculate, Long> {
+@Repository
+public interface Read_VideoCalculateRepository extends JpaRepository<VideoCalculate, Long> {
 
-    @Query(value = "SELECT new com.example.Monetization.System.dto.VideoAmountDto(vc.video, sum(vc.videoAmount) as videoAmount) " +
+    @Query(value = "SELECT new com.example.monetization.system.dto.VideoAmountDto(vc.video, sum(vc.videoAmount) as videoAmount) " +
             "FROM VideoCalculate vc " +
             "WHERE vc.video in :videoList AND vc.createdAt BETWEEN :startDate AND :endDate " +
             "GROUP BY vc.video")

@@ -1,4 +1,4 @@
-package com.example.Monetization.System;
+package com.example.monetization.system;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

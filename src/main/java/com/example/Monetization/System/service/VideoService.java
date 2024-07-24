@@ -1,19 +1,21 @@
-package com.example.Monetization.System.service;
+package com.example.monetization.system.service;
 
-import com.example.Monetization.System.dto.request.video.CreateVideoRequestDto;
-import com.example.Monetization.System.dto.request.video.PauseVideoRequestDto;
-import com.example.Monetization.System.dto.request.video.UpdateVideoRequestDto;
-import com.example.Monetization.System.dto.response.VideoViewResponseDto;
-import com.example.Monetization.System.entity.Member;
-import com.example.Monetization.System.entity.Video;
-import com.example.Monetization.System.entity.VideoAd;
-import com.example.Monetization.System.entity.VideoViewHistory;
-import com.example.Monetization.System.exception.VideoDeleteException;
-import com.example.Monetization.System.exception.VideoNotFoundException;
-import com.example.Monetization.System.repository.VideoAdRepository;
-import com.example.Monetization.System.repository.VideoRepository;
-import com.example.Monetization.System.repository.VideoViewHistoryRepository;
-import com.example.Monetization.System.security.MemberDetailsImpl;
+
+import com.example.monetization.system.dto.request.video.CreateVideoRequestDto;
+import com.example.monetization.system.dto.request.video.PauseVideoRequestDto;
+import com.example.monetization.system.dto.request.video.UpdateVideoRequestDto;
+import com.example.monetization.system.dto.response.VideoViewResponseDto;
+import com.example.monetization.system.entity.Member;
+import com.example.monetization.system.entity.Video;
+import com.example.monetization.system.entity.VideoAd;
+import com.example.monetization.system.entity.VideoViewHistory;
+import com.example.monetization.system.exception.VideoDeleteException;
+import com.example.monetization.system.exception.VideoNotFoundException;
+import com.example.monetization.system.repository.read.Read_VideoAdRepository;
+import com.example.monetization.system.repository.read.Read_VideoRepository;
+import com.example.monetization.system.repository.write.Write_VideoRepository;
+import com.example.monetization.system.repository.write.Write_VideoViewHistoryRepository;
+import com.example.monetization.system.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -27,11 +29,13 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class VideoService {
-
-    private final VideoRepository videoRepository;
-    private final VideoViewHistoryRepository videoViewHistoryRepository;
     private final RedisTemplate<String, Long> redisTemplate;
-    private final VideoAdRepository videoAdRepository;
+
+    private final Write_VideoRepository writeVideoAdRepository;
+    private final Write_VideoViewHistoryRepository write_videoViewHistoryRepository;
+
+    private final Read_VideoRepository read_videoRepository;
+    private final Read_VideoAdRepository read_videoAdRepository;
 
     // Video 생성
     public String createVideo(CreateVideoRequestDto createVideoRequestDto, MemberDetailsImpl memberDetails) {
@@ -42,7 +46,7 @@ public class VideoService {
         Video video = new Video(member, createVideoRequestDto.getVideoName(), createVideoRequestDto.getVideoDescription(), createVideoRequestDto.getVideoLength());
 
         //  Video 객체 저장
-        videoRepository.save(video);
+        writeVideoAdRepository.save(video);
 
         return "Video 생성 성공";
     }
@@ -53,7 +57,7 @@ public class VideoService {
         Member member = memberDetails.getMember();
 
         // video 존재 여부 확인
-        Video video = videoRepository.findById(videoId).orElseThrow(
+        Video video = read_videoRepository.findById(videoId).orElseThrow(
                 ()->new VideoNotFoundException("존재하지 않는 영상입니다")
         );
 
@@ -74,7 +78,7 @@ public class VideoService {
         Member member = memberDetails.getMember();
 
         // video 존재 여부 확인
-        Video video = videoRepository.findById(videoId).orElseThrow(
+        Video video = read_videoRepository.findById(videoId).orElseThrow(
                 ()->new VideoNotFoundException("존재하지 않는 영상입니다")
         );
 
@@ -85,7 +89,7 @@ public class VideoService {
         if(!member.getMemberId().equals(video.getMember().getMemberId())) return "본인의 영상만 삭제할 수 있습니다";
 
         video.delete();
-        List<VideoAd> videoAdList = videoAdRepository.findAllByVideo(video);
+        List<VideoAd> videoAdList = read_videoAdRepository.findAllByVideo(video);
         for(VideoAd videoAd : videoAdList) {
             videoAd.delete();
         }
@@ -102,7 +106,7 @@ public class VideoService {
         Member member = memberDetails.getMember();
 
         // Video의 존재 여부 확인
-        Video video = videoRepository.findById(videoId).orElseThrow(
+        Video video = read_videoRepository.findById(videoId).orElseThrow(
                 () -> new VideoNotFoundException("존재하지 않는 영상입니다.")
         );
 
@@ -130,7 +134,7 @@ public class VideoService {
         Long pauseTime = pauseVideoRequestDto.getPauseTime();
 
         // video 확인
-        Video video = videoRepository.findById(videoId).orElseThrow(
+        Video video = read_videoRepository.findById(videoId).orElseThrow(
                 () -> new VideoNotFoundException("존재하지 않는 영상입니다.")
         );
 
@@ -141,7 +145,7 @@ public class VideoService {
         if(!member.getMemberId().equals(video.getMember().getMemberId()) && videoViewMember(videoId,member.getMemberId())){
             Long watchTime = pauseTime - lastWatchTimeCheck(videoId, member.getMemberId());
             VideoViewHistory videoViewHistory = new VideoViewHistory(member,video,watchTime);
-            videoViewHistoryRepository.save(videoViewHistory);
+            write_videoViewHistoryRepository.save(videoViewHistory);
             video.totalViewUpdate();
         }
 

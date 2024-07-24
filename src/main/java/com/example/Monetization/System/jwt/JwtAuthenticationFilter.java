@@ -1,8 +1,8 @@
-package com.example.Monetization.System.jwt;
+package com.example.monetization.system.jwt;
 
-import com.example.Monetization.System.dto.request.member.LoginRequestDto;
-import com.example.Monetization.System.entity.MemberRoleEnum;
-import com.example.Monetization.System.security.MemberDetailsImpl;
+import com.example.monetization.system.dto.request.member.LoginRequestDto;
+import com.example.monetization.system.entity.MemberRoleEnum;
+import com.example.monetization.system.security.MemberDetailsImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            requestDto.getMemberId(),
+                            requestDto.getMemberEmail(),
                             requestDto.getPassword()
                     )
             );

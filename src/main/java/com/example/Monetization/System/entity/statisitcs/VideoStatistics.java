@@ -1,6 +1,7 @@
-package com.example.Monetization.System.entity.statisitcs;
+package com.example.monetization.system.entity.statisitcs;
 
-import com.example.Monetization.System.entity.Video;
+
+import com.example.monetization.system.entity.Video;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,10 +30,4 @@ public class VideoStatistics{
 
     @Column(nullable = false)
     private LocalDate createdAt = LocalDate.now().minusDays(1);
-
-    public VideoStatistics(Video video, Long videoView, Long videoPlaytime) {
-        this.video = video;
-        this.videoView = videoView;
-        this.videoPlaytime = videoPlaytime;
-    }
 }

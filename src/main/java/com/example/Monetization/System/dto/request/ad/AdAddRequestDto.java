@@ -1,4 +1,4 @@
-package com.example.Monetization.System.dto.request.ad;
+package com.example.monetization.system.dto.request.ad;
 
 import lombok.Data;
 

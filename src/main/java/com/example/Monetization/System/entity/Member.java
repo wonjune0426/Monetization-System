@@ -1,6 +1,6 @@
-package com.example.Monetization.System.entity;
+package com.example.monetization.system.entity;
 
-import com.example.Monetization.System.entity.timestapm.MainTimestamped;
+import com.example.monetization.system.entity.timestapm.MainTimestamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

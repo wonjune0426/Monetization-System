@@ -1,6 +1,7 @@
-package com.example.Monetization.System.entity.statisitcs;
+package com.example.monetization.system.entity.statisitcs;
 
-import com.example.Monetization.System.entity.VideoAd;
+
+import com.example.monetization.system.entity.VideoAd;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,8 +28,4 @@ public class AdStatistics{
     @Column(nullable = false)
     private LocalDate createdAt = LocalDate.now().minusDays(1);
 
-    public AdStatistics(VideoAd videoAd, Long adView) {
-        this.videoAd = videoAd;
-        this.adView = adView;
-    }
 }

@@ -1,4 +1,4 @@
-package com.example.Monetization.System.exception;
+package com.example.monetization.system.exception;
 
 public class VideoNotFoundException extends RuntimeException{
     public VideoNotFoundException(String message){

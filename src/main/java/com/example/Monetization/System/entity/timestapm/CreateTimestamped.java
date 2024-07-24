@@ -1,4 +1,4 @@
-package com.example.Monetization.System.entity.timestapm;
+package com.example.monetization.system.entity.timestapm;
 
 
 import jakarta.persistence.Column;

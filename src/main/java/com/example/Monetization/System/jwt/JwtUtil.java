@@ -1,6 +1,6 @@
-package com.example.Monetization.System.jwt;
+package com.example.monetization.system.jwt;
 
-import com.example.Monetization.System.entity.MemberRoleEnum;
+import com.example.monetization.system.entity.MemberRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -30,7 +31,7 @@ public class JwtUtil {
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private static final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
@@ -59,17 +60,13 @@ public class JwtUtil {
 
     // JWT Cookie 에 저장
     public void addJwtToCookie(String token, HttpServletResponse res) {
-        try {
-            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
+        token = URLEncoder.encode(token, StandardCharsets.UTF_8).replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
 
-            Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
-            cookie.setPath("/");
+        Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
+        cookie.setPath("/");
 
-            // Response 객체에 Cookie 추가
-            res.addCookie(cookie);
-        } catch (UnsupportedEncodingException e) {
-            log.error(e.getMessage());
-        }
+        // Response 객체에 Cookie 추가
+        res.addCookie(cookie);
     }
 
     // JWT 토큰 substring
@@ -109,11 +106,7 @@ public class JwtUtil {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
-                    try {
-                        return URLDecoder.decode(cookie.getValue(), "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode
-                    } catch (UnsupportedEncodingException e) {
-                        return null;
-                    }
+                    return URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8); // Encode 되어 넘어간 Value 다시 Decode
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.example.Monetization.System.configuration;
+package com.example.monetization.system.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
