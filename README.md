@@ -47,7 +47,13 @@ https://drawsql.app/teams/team-3679/diagrams/erd
 - https://documenter.getpostman.com/view/19618546/2sA3kUG2cw
 
 ### 성능개선
-- spring batch 병렬처리 관련 내용 추가
+- [spring batch 성능개선 기록](www.naver.com)
+
+|  | 개선 전 | 1차 | 2차 |
+| :---: | :---: | :---: | :---: |
+| 영상 조회 기록 (2천만 건) | 2 | 3 | 0 |
+| 광고 조회 기록 (6천만 건) | 5 | 6 | 0 |
+| 총 합 | 1 | 1 | 0 |
 
 ### 동시성처리
 - 동시성 처리 관련 내용 추가
