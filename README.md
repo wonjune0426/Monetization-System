@@ -48,7 +48,8 @@ https://drawsql.app/teams/team-3679/diagrams/erd
 
 ### 성능개선
 - [spring batch 성능개선 기록](www.naver.com)
-
+- 1차 개선 : chunk, paging size 증가
+- 2차 개선 : job의 병렬처리 수행
 |  | 개선 전 | 1차 | 2차 |
 | :---: | :---: | :---: | :---: |
 | 영상 조회 기록 (2천만 건) | 2 | 3 | 0 |
